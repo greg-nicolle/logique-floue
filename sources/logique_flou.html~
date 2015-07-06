@@ -1,0 +1,80 @@
+<html>
+<head>
+    <title>WebGL</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+    <style type="text/css">
+        body {
+            overflow: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            display: block;
+            width: 75%;
+            height: 75%;
+            top: 0;
+            left: 0;
+        }
+    </style>
+
+    <!-- External libs -->
+    <!-- http://glmatrix.net/docs/2.1.0/ -->
+    <script type="text/javascript" src="lib/gl-matrix-min.js"></script>
+    <!-- http://underscorejs.org/ -->
+    <script type="text/javascript" src="lib/underscore-min.js"></script>
+    <!-- http://api.jquery.com/ -->
+    <script type="text/javascript" src="lib/jquery-2.0.3.min.js"></script>
+
+
+    <link type="text/css" href="css/bootstrap.css" rel="stylesheet">
+    <link type="text/css" href="css/bootstrap-theme.css" rel="stylesheet">
+    <link type="text/css" href="css/tuto1.css" rel="stylesheet">
+    <!--<script type="text/javascript" src="js/jquery-1.11.0.js"></script>-->
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+
+    <!-- source code -->
+    <script type="text/javascript" src="lib/GL.js"></script>
+    <script type="text/javascript" src="lib/FileLoader.js"></script>
+    <script type="text/javascript" src="lib/Events.js"></script>
+    <script type="text/javascript" src="lib/KeyMapping.js"></script>
+    <script type="text/javascript" src="lib/KeyboardManager.js"></script>
+    <script type="text/javascript" src="lib/MouseManager.js"></script>
+
+    <script type="text/javascript" src="lib/Texture.js"></script>
+    <script type="text/javascript" src="lib/RenderTarget.js"></script>
+    <script type="text/javascript" src="lib/Material.js"></script>
+    <script type="text/javascript" src="lib/Object3D.js"></script>
+    <script type="text/javascript" src="lib/Mesh.js"></script>
+
+    <script type="text/javascript" src="lib/Renderer.js"></script>
+    <script type="text/javascript" src="lib/Camera.js"></script>
+
+    <script type="text/javascript" src="main_logique.js"></script>
+    <script type="text/javascript" src="interface.js"></script>
+
+</head>
+<body onload="start();" oncontextmenu="return false;">
+
+<div class="col-xs-9">
+    <div>
+        <canvas id="renderingCanvas"></canvas>
+    </div>
+</div>
+<div class="col-xs-3">
+    <br/><button class="capteur btn btn-primary" onclick="return false;">afficher/supprimer</button>
+    <br/><button class="play btn btn-primary" onclick="return false;">Play/Pause</button>
+    <br/><button class="nitro btn btn-primary" onclick="return false;">Nitro</button>
+    <br/><button class="reboot btn btn-primary" onclick="return false;">rebboot</button>
+    <br/><button class="escargot btn btn-primary" onclick="return false;">escargot</button>
+    <br/><button class="demitour btn btn-primary" onclick="return false;">demitour</button>
+    <br/><button class="emitour2 btn btn-primary" onclick="return false;">demitour de la mort</button>
+    <br/><button class="antonoir btn btn-primary" onclick="return false;">antonoirr</button>
+
+</div>
+<span id="memoryGaugeContainer"></span>
+<span id="cpuGaugeContainer"></span>
+<span id="networkGaugeContainer"></span>
+<span id="testGaugeContainer"></span>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+    "name" : "Echange de fichier",
+    "main": "./sources/logique_flou.html",
+    "window": {
+	"fullscreen": false,
+        "toolbar": false,
+        "frame": true 
+    }
+}
