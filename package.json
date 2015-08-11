@@ -1,9 +1,15 @@
 {
-    "name" : "Echange de fichier",
-    "main": "./sources/logique_flou.html",
-    "window": {
-	"fullscreen": false,
-        "toolbar": false,
-        "frame": true 
-    }
+  "name": "Echange_de_fichier",
+  "main": "./sources/logique_flou.html",
+  "window": {
+    "fullscreen": false,
+    "toolbar": false,
+    "frame": true
+  },
+  "scripts": {
+    "start": "nw"
+  },
+  "dependencies": {
+    "nw": "^0.12.3"
+  }
 }
