@@ -1,6 +1,9 @@
 /**
  * Created by greg on 05/03/15.
  */
+
+var logique = require('./logique');
+
 var robot = {};
 var obstacles = [];
 var capteurs = [];
@@ -65,7 +68,7 @@ var escargot = function() {
     camera.setPosition(-2500,1000,2500);
     camera.setTarget(0,0,0);
     e_pause = false;
-}
+};
 
 var demitour = function() {
     for(var i = 1; i < 10; i++) {
@@ -85,7 +88,7 @@ var demitour = function() {
     camera.setPosition(-2500,1000,2500);
     camera.setTarget(0,0,0);
     e_pause = false;
-}
+};
 
 var demitour2 = function() {
     for(var i = 1; i < 10; i++) {
@@ -105,7 +108,7 @@ var demitour2 = function() {
     camera.setPosition(-2500,1000,2500);
     camera.setTarget(0,0,0);
     e_pause = false;
-}
+};
 
 var antonoir = function() {
     obstacles[1].Object.setPosition(-Math.sin(3*Math.PI/8)*obstacles[1].longueur*2,0,-Math.cos(3*Math.PI/8)*obstacles[1].longueur*2);
@@ -126,16 +129,16 @@ var antonoir = function() {
     camera.setPosition(-2500,1000,2500);
     camera.setTarget(0,0,0);
     e_pause = false;
-}
+};
 
 
 var change_capteur = function() {
     e_capteur = !e_capteur;
-}
+};
 
 var pause = function() {
     e_pause = !e_pause;
-}
+};
 
 var nitro = function() {
     if(e_nitro) {
@@ -144,7 +147,7 @@ var nitro = function() {
         vitessemax = 5;
     }
     e_nitro = !e_nitro;
-}
+};
 
 var camera ={};
 var reboot = function() {
@@ -156,7 +159,7 @@ var reboot = function() {
     robot.Object.setRotation(0,0,0);
     camera.setPosition(-2500,1000,2500);
     camera.setTarget(0,0,0);
-}
+};
 
 
 function start() {
@@ -302,7 +305,7 @@ var init_sky = function() {
     skyObject = new Object3D(skyMesh, skyMat);
     skyObject.setScale(camera.far*0.7,camera.far*0.7,camera.far*0.7);
     skyObject.setPosition(0,-5000,0);
-}
+};
 
 var init_robot = function() {
     robot.largeur = 170;
@@ -492,9 +495,11 @@ var init_capteurs = function() {
 
 var tempo = function() {
     if(--sem == 0) {
-        defloutage();
+        tmp = logique.defloutage(capteurs).then(logique.defu);
+        vitesse = tmp.vitesse;
+        robot.
     }
-}
+};
 
 var calcul_droite = function(input) {
     var a = Math.cos(input.Object.rotation[1])/Math.sin(input.Object.rotation[1]);
@@ -599,7 +604,7 @@ var calcul_droite = function(input) {
     }
 
     triAnsemble(400-20*(input.rotation*input.rotation),1000,Math.sqrt(min),input);
-}
+};
 
 var triAnsemble = function(borne1, borne2, val, cap){
 
@@ -634,62 +639,6 @@ var triAnsemble = function(borne1, borne2, val, cap){
         cap.appartenance.e3 = 0;
     }
     tempo();
-}
-
-var defloutage = function() {
-    var sum = 0;
-    var tmp = 0;
-    for(var i in capteurs) {
-        if(!!capteurs[i].appartenance.e1) {
-            tmp = capteurs[i].appartenance.e1;
-        }
-        if(capteurs[i].largeur > 0) {
-            sum += capteurs[i].appartenance.e1*Math.PI/2+capteurs[i].appartenance.e2*Math.PI/4;
-        } else {
-            sum += -capteurs[i].appartenance.e1*Math.PI/2-capteurs[i].appartenance.e2*Math.PI/4;
-        }
-    }
-    if(!!tmp && !sum) {
-        sum = tmp*Math.PI/2;
-    }
-    defu(-Math.PI,Math.PI,sum/capteurs.length);
-}
-
-var defu = function(borne1, borne2, val){
-
-    var res = {};
-    var borne0 = (borne2+borne1)/2;
-
-    var a1 = 1/(borne0-borne1);
-    var a2 = 1/(borne2-borne0);
-
-    if(val <= borne1){
-        res.e1=1;
-        res.e2 =0;
-        res.e3 = 0;
-    }else if(val > borne1 && val < borne0){
-
-        res.e2 = a1*(val-borne1);
-        res.e1 = 1 - res.e2;
-        res.e3 = 0;
-    }else if(val > borne0 && val < borne2){
-
-        res.e1 = 0;
-        res.e3 = a2*(val-borne0);
-        res.e2 = 1 - res.e3;
-    }else if(val >= borne2){
-
-        res.e1 = 0;
-        res.e2 = 0;
-        res.e3 = 1;
-    }else if(val == borne0){
-
-        res.e1 = 0;
-        res.e2 = 1;
-        res.e3 = 0;
-    }
-
-    vitesse = vitessemax*(Math.exp(res.e2*2)-1)+vitessemin;
-    robot.Object.setRotation(0,robot.Object.rotation[1]-res.e1*Math.PI/2,0);
-    robot.Object.setRotation(0,robot.Object.rotation[1]+res.e3*Math.PI/2,0);
 };
+
+

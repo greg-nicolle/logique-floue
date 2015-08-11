@@ -2,7 +2,7 @@
   "name": "Echange_de_fichier",
   "main": "./sources/logique_flou.html",
   "window": {
-    "fullscreen": false,
+    "fullscreen": true,
     "toolbar": false,
     "frame": true
   },
