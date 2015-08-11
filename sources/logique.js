@@ -1,21 +1,21 @@
-exports.defloutage = function(capteurs) {
+exports.defloutage = function(caps) {
   return new Promise(function(resolve, reject) {
     var sum = 0;
     var tmp = 0;
-    for (var i in capteurs) {
-      if (!!capteurs[i].appartenance.e1) {
-        tmp = capteurs[i].appartenance.e1;
+    for (var i in caps) {
+      if (!!caps[i].appartenance.e1) {
+        tmp = caps[i].appartenance.e1;
       }
-      if (capteurs[i].largeur > 0) {
-        sum += capteurs[i].appartenance.e1 * Math.PI / 2 + capteurs[i].appartenance.e2 * Math.PI / 4;
+      if (caps[i].largeur > 0) {
+        sum += caps[i].appartenance.e1 * Math.PI / 2 + caps[i].appartenance.e2 * Math.PI / 4;
       } else {
-        sum += -capteurs[i].appartenance.e1 * Math.PI / 2 - capteurs[i].appartenance.e2 * Math.PI / 4;
+        sum += -caps[i].appartenance.e1 * Math.PI / 2 - caps[i].appartenance.e2 * Math.PI / 4;
       }
     }
     if (!!tmp && !sum) {
       sum = tmp * Math.PI / 2;
     }
-    resolve(sum/capteurs.length);
+    resolve(sum/caps.length);
   });
 };
 var borne1 = -Math.PI;
@@ -55,9 +55,6 @@ exports.defu = function(val){
           res.e3 = 0;
         }
 
-        vitesse = vitessemax * (Math.exp(res.e2 * 2) - 1) + vitessemin;
-        robot.Object.setRotation(0, robot.Object.rotation[1] - res.e1 * Math.PI / 2, 0);
-        robot.Object.setRotation(0, robot.Object.rotation[1] + res.e3 * Math.PI / 2, 0);
-        resolve({vitesse:vitesse,rotation:robot.Object.rotation[1] - res.e1 * Math.PI / 2 + res.e3 * Math.PI / 2});
+        resolve({vitesse:Math.exp(res.e2 * 2) - 1,rotation: (res.e3 * Math.PI / 2) - (res.e1 * Math.PI / 2)});
       })
 };

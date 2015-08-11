@@ -2,7 +2,7 @@
   "name": "Echange_de_fichier",
   "main": "./sources/logique_flou.html",
   "window": {
-    "fullscreen": true,
+    "fullscreen": false,
     "toolbar": false,
     "frame": true
   },
@@ -10,6 +10,7 @@
     "start": "nw"
   },
   "dependencies": {
+    "bluebird": "^2.9.34",
     "nw": "^0.12.3"
   }
 }
