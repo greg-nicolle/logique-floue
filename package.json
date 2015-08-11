@@ -10,7 +10,6 @@
     "start": "nw"
   },
   "dependencies": {
-    "bluebird": "^2.9.34",
     "nw": "^0.12.3"
   }
 }
