@@ -235,6 +235,7 @@ var init_sky = function () {
 };
 
 var init_robot = function () {
+  var v = new Robot(170,450,"data/9112.obj");
   robot.largeur = 170;
   robot.longueur = 450;
 
