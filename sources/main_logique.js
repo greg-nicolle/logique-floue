@@ -3,6 +3,7 @@
  */
 
 var logique = require('./logique');
+var maps = require('./maps');
 
 var robot = {};
 var obstacles = [];
@@ -15,7 +16,6 @@ var e_nitro = true;
 var vitesse = 0;
 var vitessemax = 5;
 var vitessemin = 1;
-var sem = 0;
 var ratio = 0.75;
 var test = [];
 var skyObject = {};
@@ -38,96 +38,23 @@ var calcul_position = function (input) {
   input.Object.setRotation(0, robot.Object.rotation[1] + input.rotation, 0);
 };
 
-var escargot = function () {
-  for (var i = 1; i < 6; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] + obstacles[i].longueur, 0, 0);
-    obstacles[i].Object.setRotation(0, Math.PI / 2, 0);
-  }
-  for (var i = 6; i < 11; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0], 0, obstacles[i - 1].Object.position[2] + obstacles[i].longueur);
-    obstacles[i].Object.setRotation(0, Math.PI, 0);
-  }
-  for (var i = 11; i < 15; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] - obstacles[i].longueur, 0, obstacles[i - 1].Object.position[2]);
-    obstacles[i].Object.setRotation(0, Math.PI / 2, 0);
-  }
-  for (var i = 15; i < 18; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0], 0, obstacles[i - 1].Object.position[2] - obstacles[i].longueur);
-    obstacles[i].Object.setRotation(0, Math.PI, 0);
-  }
-  for (var i = 18; i < 20; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] + obstacles[i].longueur, 0, obstacles[i - 1].Object.position[2]);
-    obstacles[i].Object.setRotation(0, Math.PI / 2, 0);
-  }
-  for (var i = 20; i < 21; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0], 0, obstacles[i - 1].Object.position[2] + obstacles[i].longueur);
-    obstacles[i].Object.setRotation(0, Math.PI, 0);
-  }
-  robot.Object.setPosition(2000, 0, 4000);
-  robot.Object.setRotation(0, 0, 0);
-  camera.setPosition(-2500, 1000, 2500);
-  camera.setTarget(0, 0, 0);
+var escargot = function() {
+  maps.escargot(obstacles,robot,camera);
   e_pause = false;
 };
 
-var demitour = function () {
-  for (var i = 1; i < 10; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] + obstacles[i].longueur, 0, 0);
-    obstacles[i].Object.setRotation(0, Math.PI / 2, 0);
-  }
-  for (var i = 10; i < 12; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0], 0, obstacles[i - 1].Object.position[2] + obstacles[i].longueur);
-    obstacles[i].Object.setRotation(0, Math.PI, 0);
-  }
-  for (var i = 12; i < 30; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] - obstacles[i].longueur, 0, obstacles[i - 1].Object.position[2]);
-    obstacles[i].Object.setRotation(0, Math.PI / 2, 0);
-  }
-  robot.Object.setPosition(1000, 0, 1500);
-  robot.Object.setRotation(0, -Math.PI / 2, 0);
-  camera.setPosition(-2500, 1000, 2500);
-  camera.setTarget(0, 0, 0);
+var demitour = function(){
+  maps.demitour(obstacles,robot,camera);
   e_pause = false;
 };
 
-var demitour2 = function () {
-  for (var i = 1; i < 10; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] + obstacles[i].longueur, 0, 0);
-    obstacles[i].Object.setRotation(0, Math.PI / 2, 0);
-  }
-  for (var i = 10; i < 12; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0], 0, obstacles[i - 1].Object.position[2] + obstacles[i].longueur * 0.75);
-    obstacles[i].Object.setRotation(0, Math.PI, 0);
-  }
-  for (var i = 12; i < 30; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] - obstacles[i].longueur, 0, obstacles[i - 1].Object.position[2]);
-    obstacles[i].Object.setRotation(0, Math.PI / 2, 0);
-  }
-  robot.Object.setPosition(1000, 0, 800);
-  robot.Object.setRotation(0, -Math.PI / 2, 0);
-  camera.setPosition(-2500, 1000, 2500);
-  camera.setTarget(0, 0, 0);
+var demitour2 = function(){
+  maps.demitour2(obstacles,robot,camera);
   e_pause = false;
 };
 
-var antonoir = function () {
-  obstacles[1].Object.setPosition(-Math.sin(3 * Math.PI / 8) * obstacles[1].longueur * 2, 0, -Math.cos(3 * Math.PI / 8) * obstacles[1].longueur * 2);
-  obstacles[1].Object.setRotation(0, 3 * Math.PI / 8, 0);
-  for (var i = 2; i < 15; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] - Math.sin(obstacles[i - 1].Object.rotation[1]) * obstacles[i].longueur, 0, obstacles[i - 1].Object.position[2] - Math.cos(obstacles[i - 1].Object.rotation[1]) * obstacles[i].longueur);
-    obstacles[i].Object.setRotation(0, obstacles[i - 1].Object.rotation[1], 0);
-  }
-
-  obstacles[15].Object.setPosition(-Math.sin(5 * Math.PI / 8) * obstacles[15].longueur * 2, 0, -Math.cos(5 * Math.PI / 8) * obstacles[15].longueur);
-  obstacles[15].Object.setRotation(0, 5 * Math.PI / 8, 0);
-  for (var i = 16; i < 30; i++) {
-    obstacles[i].Object.setPosition(obstacles[i - 1].Object.position[0] - Math.sin(obstacles[i - 1].Object.rotation[1]) * obstacles[i].longueur, 0, obstacles[i - 1].Object.position[2] - Math.cos(obstacles[i - 1].Object.rotation[1]) * obstacles[i].longueur);
-    obstacles[i].Object.setRotation(0, obstacles[i - 1].Object.rotation[1], 0);
-  }
-  robot.Object.setPosition(-10000, 0, 0);
-  robot.Object.setRotation(0, -Math.PI / 2, 0);
-  camera.setPosition(-2500, 1000, 2500);
-  camera.setTarget(0, 0, 0);
+var antonoir = function(){
+  maps.antonoir(obstacles,robot,camera);
   e_pause = false;
 };
 
@@ -150,15 +77,9 @@ var nitro = function () {
 };
 
 var camera = {};
-var reboot = function () {
-  for (var i = 1; i < 30; i++) {
-    obstacles[i].Object.setPosition(Math.random() * 25000 - 12500, 0, Math.random() * 25000 - 12500);
-    obstacles[i].Object.setRotation(0, Math.random() * Math.PI - Math.PI / 2, 0);
-  }
-  robot.Object.setPosition(0, 0, 0);
-  robot.Object.setRotation(0, 0, 0);
-  camera.setPosition(-2500, 1000, 2500);
-  camera.setTarget(0, 0, 0);
+var reboot = function(){
+  maps.reboot(obstacles,robot,camera);
+  e_pause = false;
 };
 
 
@@ -227,10 +148,15 @@ function start() {
       camera.setTarget(robot.Object.position[0], robot.Object.position[1], robot.Object.position[2]);
 
     }
-    sem = 15;
+    var P = [];
     for (var i in capteurs) {
       calcul_position(capteurs[i]);
-      if (e_pause) calcul_droite(capteurs[i]);
+      if (e_pause) {
+        P.push(calcul_droite(capteurs[i])
+            .then(triAnsemble));
+        Promise.all(P)
+        .then(tempo);
+      }
     }
     for (var i in reactors) {
       calcul_position(reactors[i]);
@@ -493,7 +419,6 @@ var init_capteurs = function () {
 
 
 var tempo = function () {
-  if (--sem == 0) {
     logique.defloutage(capteurs)
         .then(logique.defu)
         .then(function (result) {
@@ -503,147 +428,159 @@ var tempo = function () {
         .catch(function (err) {
           console.log("error:" + err)
         });
-  }
 };
 
 var calcul_droite = function (input) {
-  var a = Math.cos(input.Object.rotation[1]) / Math.sin(input.Object.rotation[1]);
+  return new Promise(function(resolve,reject){
+    var a = Math.cos(input.Object.rotation[1]) / Math.sin(input.Object.rotation[1]);
 
-  var b = input.Object.position[2] - a * input.Object.position[0];
-
-
-  var min = Infinity;
-
-  for (var i in obstacles) {
-
-    var vec = {};
-    vec.x = -Math.cos(Math.PI / 2) * Math.sin(obstacles[i].Object.rotation[1]) + Math.sin(Math.PI / 2) * Math.cos(obstacles[i].Object.rotation[1]);
-    vec.z = -Math.sin(Math.PI / 2) * Math.sin(obstacles[i].Object.rotation[1]) - Math.cos(Math.PI / 2) * Math.cos(obstacles[i].Object.rotation[1]);
+    var b = input.Object.position[2] - a * input.Object.position[0];
 
 
-    var position = [];
-    position[0] = {};
-    position[0].x = obstacles[i].Object.position[0] - obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 + vec.x * obstacles[i].largeur / 2;
-    position[0].y = obstacles[i].Object.position[2] - obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 + vec.z * obstacles[i].largeur / 2;
+    var min = Infinity;
 
-    position[1] = {};
-    position[1].x = obstacles[i].Object.position[0] - obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 - vec.x * obstacles[i].largeur / 2;
-    position[1].y = obstacles[i].Object.position[2] - obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 - vec.z * obstacles[i].largeur / 2;
+    for (var i in obstacles) {
 
-    position[2] = {};
-    position[2].x = obstacles[i].Object.position[0] + obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 - vec.x * obstacles[i].largeur / 2;
-    position[2].y = obstacles[i].Object.position[2] + obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 - vec.z * obstacles[i].largeur / 2;
-
-    position[3] = {};
-    position[3].x = obstacles[i].Object.position[0] + obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 + vec.x * obstacles[i].largeur / 2;
-    position[3].y = obstacles[i].Object.position[2] + obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 + vec.z * obstacles[i].largeur / 2;
-
-    var a1 = (position[1].y - position[0].y) / (position[1].x - position[0].x);
-    var b1 = position[1].y - a1 * position[1].x;
-
-    var a2 = (position[2].y - position[1].y) / (position[2].x - position[1].x);
-    var b2 = position[1].y - a2 * position[1].x;
-
-    var a3 = (position[2].y - position[3].y) / (position[2].x - position[3].x);
-    var b3 = position[2].y - a3 * position[2].x;
-
-    var a4 = (position[3].y - position[0].y) / (position[3].x - position[0].x);
-    var b4 = position[3].y - a4 * position[3].x;
+      var vec = {};
+      vec.x = -Math.cos(Math.PI / 2) * Math.sin(obstacles[i].Object.rotation[1]) + Math.sin(Math.PI / 2) * Math.cos(obstacles[i].Object.rotation[1]);
+      vec.z = -Math.sin(Math.PI / 2) * Math.sin(obstacles[i].Object.rotation[1]) - Math.cos(Math.PI / 2) * Math.cos(obstacles[i].Object.rotation[1]);
 
 
-    var x1 = (b1 - b) / (a - a1);
-    var y1 = a * x1 + b;
+      var position = [];
+      position[0] = {};
+      position[0].x = obstacles[i].Object.position[0] - obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 + vec.x * obstacles[i].largeur / 2;
+      position[0].y = obstacles[i].Object.position[2] - obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 + vec.z * obstacles[i].largeur / 2;
 
-    if ((x1 < position[0].x && x1 > position[1].x) || (x1 > position[0].x && x1 < position[1].x)) {
-      if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x1) ||
-          (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x1)) &&
-          ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y1) ||
-          (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y1))) &&
-          min > (x1 - input.Object.position[0]) * (x1 - input.Object.position[0]) + (y1 - input.Object.position[2]) * (y1 - input.Object.position[2])) {
+      position[1] = {};
+      position[1].x = obstacles[i].Object.position[0] - obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 - vec.x * obstacles[i].largeur / 2;
+      position[1].y = obstacles[i].Object.position[2] - obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 - vec.z * obstacles[i].largeur / 2;
 
-        min = (x1 - input.Object.position[0]) * (x1 - input.Object.position[0]) + (y1 - input.Object.position[2]) * (y1 - input.Object.position[2]);
+      position[2] = {};
+      position[2].x = obstacles[i].Object.position[0] + obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 - vec.x * obstacles[i].largeur / 2;
+      position[2].y = obstacles[i].Object.position[2] + obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 - vec.z * obstacles[i].largeur / 2;
+
+      position[3] = {};
+      position[3].x = obstacles[i].Object.position[0] + obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 + vec.x * obstacles[i].largeur / 2;
+      position[3].y = obstacles[i].Object.position[2] + obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 + vec.z * obstacles[i].largeur / 2;
+
+      var a1 = (position[1].y - position[0].y) / (position[1].x - position[0].x);
+      var b1 = position[1].y - a1 * position[1].x;
+
+      var a2 = (position[2].y - position[1].y) / (position[2].x - position[1].x);
+      var b2 = position[1].y - a2 * position[1].x;
+
+      var a3 = (position[2].y - position[3].y) / (position[2].x - position[3].x);
+      var b3 = position[2].y - a3 * position[2].x;
+
+      var a4 = (position[3].y - position[0].y) / (position[3].x - position[0].x);
+      var b4 = position[3].y - a4 * position[3].x;
+
+
+      var x1 = (b1 - b) / (a - a1);
+      var y1 = a * x1 + b;
+
+      if ((x1 < position[0].x && x1 > position[1].x) || (x1 > position[0].x && x1 < position[1].x)) {
+        if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x1) ||
+            (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x1)) &&
+            ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y1) ||
+            (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y1))) &&
+            min > (x1 - input.Object.position[0]) * (x1 - input.Object.position[0]) + (y1 - input.Object.position[2]) * (y1 - input.Object.position[2])) {
+
+          min = (x1 - input.Object.position[0]) * (x1 - input.Object.position[0]) + (y1 - input.Object.position[2]) * (y1 - input.Object.position[2]);
+        }
+      }
+
+      var x2 = (b2 - b) / (a - a2);
+      var y2 = a * x2 + b;
+
+      if ((x2 < position[1].x && x2 > position[2].x) || (x2 > position[1].x && x2 < position[2].x)) {
+        if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x2) ||
+            (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x2)) &&
+            ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y2) ||
+            (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y2))) &&
+            min > (x2 - input.Object.position[0]) * (x2 - input.Object.position[0]) + (y2 - input.Object.position[2]) * (y2 - input.Object.position[2])) {
+
+          min = (x2 - input.Object.position[0]) * (x2 - input.Object.position[0]) + (y2 - input.Object.position[2]) * (y2 - input.Object.position[2]);
+        }
+      }
+
+      var x3 = (b3 - b) / (a - a3);
+      var y3 = a * x3 + b;
+
+      if ((x3 < position[2].x && x3 > position[3].x) || (x3 > position[2].x && x3 < position[3].x)) {
+        if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x3) ||
+            (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x3)) &&
+            ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y3) ||
+            (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y3))) &&
+            min > (x3 - input.Object.position[0]) * (x3 - input.Object.position[0]) + (y3 - input.Object.position[2]) * (y3 - input.Object.position[2])) {
+
+          min = (x3 - input.Object.position[0]) * (x3 - input.Object.position[0]) + (y3 - input.Object.position[2]) * (y3 - input.Object.position[2]);
+        }
+      }
+
+      var x4 = (b4 - b) / (a - a4);
+      var y4 = a * x4 + b;
+
+      if ((x4 > position[3].x && x4 < position[0].x) || (x4 < position[3].x && x4 > position[0].x)) {
+        if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x4) ||
+            (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x4)) &&
+            ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y4) ||
+            (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y4))) &&
+            min > (x4 - input.Object.position[0]) * (x4 - input.Object.position[0]) + (y4 - input.Object.position[2]) * (y4 - input.Object.position[2])) {
+
+          min = (x4 - input.Object.position[0]) * (x4 - input.Object.position[0]) + (y4 - input.Object.position[2]) * (y4 - input.Object.position[2]);
+        }
       }
     }
 
-    var x2 = (b2 - b) / (a - a2);
-    var y2 = a * x2 + b;
-
-    if ((x2 < position[1].x && x2 > position[2].x) || (x2 > position[1].x && x2 < position[2].x)) {
-      if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x2) ||
-          (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x2)) &&
-          ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y2) ||
-          (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y2))) &&
-          min > (x2 - input.Object.position[0]) * (x2 - input.Object.position[0]) + (y2 - input.Object.position[2]) * (y2 - input.Object.position[2])) {
-
-        min = (x2 - input.Object.position[0]) * (x2 - input.Object.position[0]) + (y2 - input.Object.position[2]) * (y2 - input.Object.position[2]);
-      }
-    }
-
-    var x3 = (b3 - b) / (a - a3);
-    var y3 = a * x3 + b;
-
-    if ((x3 < position[2].x && x3 > position[3].x) || (x3 > position[2].x && x3 < position[3].x)) {
-      if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x3) ||
-          (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x3)) &&
-          ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y3) ||
-          (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y3))) &&
-          min > (x3 - input.Object.position[0]) * (x3 - input.Object.position[0]) + (y3 - input.Object.position[2]) * (y3 - input.Object.position[2])) {
-
-        min = (x3 - input.Object.position[0]) * (x3 - input.Object.position[0]) + (y3 - input.Object.position[2]) * (y3 - input.Object.position[2]);
-      }
-    }
-
-    var x4 = (b4 - b) / (a - a4);
-    var y4 = a * x4 + b;
-
-    if ((x4 > position[3].x && x4 < position[0].x) || (x4 < position[3].x && x4 > position[0].x)) {
-      if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x4) ||
-          (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x4)) &&
-          ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y4) ||
-          (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y4))) &&
-          min > (x4 - input.Object.position[0]) * (x4 - input.Object.position[0]) + (y4 - input.Object.position[2]) * (y4 - input.Object.position[2])) {
-
-        min = (x4 - input.Object.position[0]) * (x4 - input.Object.position[0]) + (y4 - input.Object.position[2]) * (y4 - input.Object.position[2]);
-      }
-    }
-  }
-
-  triAnsemble(400 - 20 * (input.rotation * input.rotation), 1000, Math.sqrt(min), input);
+    var result = {};
+    result.borne1 = 400 - 20 * (input.rotation * input.rotation);
+    result.borne2 = 1000;
+    result.val = Math.sqrt(min);
+    result.cap = input;
+    resolve(result)
+  })
 };
 
-var triAnsemble = function (borne1, borne2, val, cap) {
+var triAnsemble = function (input) {
 
-  var borne0 = (borne2 + borne1) / 2;
+  return new Promise(function(resolve, reject){
+    var borne1 = input.borne1,
+        borne2 = input.borne2,
+        val = input.val,
+        cap = input.cap;
+    var borne0 = (borne2 + borne1) / 2;
 
-  var a1 = 1 / (borne0 - borne1);
-  var a2 = 1 / (borne2 - borne0);
+    var a1 = 1 / (borne0 - borne1);
+    var a2 = 1 / (borne2 - borne0);
 
-  if (val <= borne1) {
-    cap.appartenance.e1 = 1;
-    cap.appartenance.e2 = 0;
-    cap.appartenance.e3 = 0;
-  } else if (val > borne1 && val < borne0) {
+    if (val <= borne1) {
+      cap.appartenance.e1 = 1;
+      cap.appartenance.e2 = 0;
+      cap.appartenance.e3 = 0;
+    } else if (val > borne1 && val < borne0) {
 
-    cap.appartenance.e2 = a1 * (val - borne1);
-    cap.appartenance.e1 = 1 - cap.appartenance.e2;
-    cap.appartenance.e3 = 0;
-  } else if (val > borne0 && val < borne2) {
+      cap.appartenance.e2 = a1 * (val - borne1);
+      cap.appartenance.e1 = 1 - cap.appartenance.e2;
+      cap.appartenance.e3 = 0;
+    } else if (val > borne0 && val < borne2) {
 
-    cap.appartenance.e1 = 0;
-    cap.appartenance.e3 = a2 * (val - borne0);
-    cap.appartenance.e2 = 1 - cap.appartenance.e3;
-  } else if (val >= borne2) {
+      cap.appartenance.e1 = 0;
+      cap.appartenance.e3 = a2 * (val - borne0);
+      cap.appartenance.e2 = 1 - cap.appartenance.e3;
+    } else if (val >= borne2) {
 
-    cap.appartenance.e1 = 0;
-    cap.appartenance.e2 = 0;
-    cap.appartenance.e3 = 1;
-  } else if (val == borne0) {
+      cap.appartenance.e1 = 0;
+      cap.appartenance.e2 = 0;
+      cap.appartenance.e3 = 1;
+    } else if (val == borne0) {
 
-    cap.appartenance.e1 = 0;
-    cap.appartenance.e2 = 1;
-    cap.appartenance.e3 = 0;
-  }
-  tempo();
+      cap.appartenance.e1 = 0;
+      cap.appartenance.e2 = 1;
+      cap.appartenance.e3 = 0;
+    }
+    resolve();
+  });
 };
 
 

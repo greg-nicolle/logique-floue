@@ -1,3 +1,6 @@
+const borne1 = -Math.PI;
+const borne2 = Math.PI;
+
 exports.defloutage = function(caps) {
   return new Promise(function(resolve, reject) {
     var sum = 0;
@@ -18,8 +21,6 @@ exports.defloutage = function(caps) {
     resolve(sum/caps.length);
   });
 };
-var borne1 = -Math.PI;
-var borne2 = -borne1;
 
 exports.defu = function(val){
       return new Promise(function(resolve, reject) {
@@ -55,6 +56,6 @@ exports.defu = function(val){
           res.e3 = 0;
         }
 
-        resolve({vitesse:Math.exp(res.e2 * 2) - 1,rotation: (res.e3 * Math.PI / 2) - (res.e1 * Math.PI / 2)});
+        resolve({vitesse:Math.exp(res.e2 * 2) - 1,rotation: (res.e3 * Math.PI / 6) - (res.e1 * Math.PI / 6)});
       })
 };

@@ -2,8 +2,8 @@
   "name": "Echange_de_fichier",
   "main": "./sources/logique_flou.html",
   "window": {
-    "fullscreen": false,
-    "toolbar": false,
+    "fullscreen": true,
+    "toolbar": true,
     "frame": true
   },
   "scripts": {
