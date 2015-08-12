@@ -38,23 +38,23 @@ var calcul_position = function (input) {
   input.Object.setRotation(0, robot.Object.rotation[1] + input.rotation, 0);
 };
 
-var escargot = function() {
-  maps.escargot(obstacles,robot,camera);
+var escargot = function () {
+  maps.escargot(obstacles, robot, camera);
   e_pause = false;
 };
 
-var demitour = function(){
-  maps.demitour(obstacles,robot,camera);
+var demitour = function () {
+  maps.demitour(obstacles, robot, camera);
   e_pause = false;
 };
 
-var demitour2 = function(){
-  maps.demitour2(obstacles,robot,camera);
+var demitour2 = function () {
+  maps.demitour2(obstacles, robot, camera);
   e_pause = false;
 };
 
-var antonoir = function(){
-  maps.antonoir(obstacles,robot,camera);
+var antonoir = function () {
+  maps.antonoir(obstacles, robot, camera);
   e_pause = false;
 };
 
@@ -77,8 +77,8 @@ var nitro = function () {
 };
 
 var camera = {};
-var reboot = function(){
-  maps.reboot(obstacles,robot,camera);
+var reboot = function () {
+  maps.reboot(obstacles, robot, camera);
   e_pause = false;
 };
 
@@ -154,10 +154,10 @@ function start() {
       if (e_pause) {
         P.push(calcul_droite(capteurs[i])
             .then(triAnsemble));
-        Promise.all(P)
-        .then(tempo);
       }
     }
+    Promise.all(P)
+        .then(tempo);
     for (var i in reactors) {
       calcul_position(reactors[i]);
     }
@@ -419,19 +419,19 @@ var init_capteurs = function () {
 
 
 var tempo = function () {
-    logique.defloutage(capteurs)
-        .then(logique.defu)
-        .then(function (result) {
-          vitesse = vitessemax * result.vitesse + vitessemin;
-          robot.Object.setRotation(0, robot.Object.rotation[1] + result.rotation, 0);
-        })
-        .catch(function (err) {
-          console.log("error:" + err)
-        });
+  logique.defloutage(capteurs)
+      .then(logique.defu)
+      .then(function (result) {
+        vitesse = vitessemax * result.vitesse + vitessemin;
+        robot.Object.setRotation(0, robot.Object.rotation[1] + result.rotation, 0);
+      })
+      .catch(function (err) {
+        console.log("error:" + err)
+      });
 };
 
 var calcul_droite = function (input) {
-  return new Promise(function(resolve,reject){
+  return new Promise(function (resolve, reject) {
     var a = Math.cos(input.Object.rotation[1]) / Math.sin(input.Object.rotation[1]);
 
     var b = input.Object.position[2] - a * input.Object.position[0];
@@ -544,7 +544,7 @@ var calcul_droite = function (input) {
 
 var triAnsemble = function (input) {
 
-  return new Promise(function(resolve, reject){
+  return new Promise(function (resolve, reject) {
     var borne1 = input.borne1,
         borne2 = input.borne2,
         val = input.val,

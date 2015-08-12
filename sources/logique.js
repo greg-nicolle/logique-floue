@@ -1,8 +1,8 @@
 const borne1 = -Math.PI;
 const borne2 = Math.PI;
 
-exports.defloutage = function(caps) {
-  return new Promise(function(resolve, reject) {
+exports.defloutage = function (caps) {
+  return new Promise(function (resolve, reject) {
     var sum = 0;
     var tmp = 0;
     for (var i in caps) {
@@ -18,44 +18,44 @@ exports.defloutage = function(caps) {
     if (!!tmp && !sum) {
       sum = tmp * Math.PI / 2;
     }
-    resolve(sum/caps.length);
+    resolve(sum / caps.length);
   });
 };
 
-exports.defu = function(val){
-      return new Promise(function(resolve, reject) {
-        var res = {};
-        var borne0 = (borne2 + borne1) / 2;
+exports.defu = function (val) {
+  return new Promise(function (resolve, reject) {
+    var res = {};
+    var borne0 = (borne2 + borne1) / 2;
 
-        var a1 = 1 / (borne0 - borne1);
-        var a2 = 1 / (borne2 - borne0);
+    var a1 = 1 / (borne0 - borne1);
+    var a2 = 1 / (borne2 - borne0);
 
-        if (val <= borne1) {
-          res.e1 = 1;
-          res.e2 = 0;
-          res.e3 = 0;
-        } else if (val > borne1 && val < borne0) {
+    if (val <= borne1) {
+      res.e1 = 1;
+      res.e2 = 0;
+      res.e3 = 0;
+    } else if (val > borne1 && val < borne0) {
 
-          res.e2 = a1 * (val - borne1);
-          res.e1 = 1 - res.e2;
-          res.e3 = 0;
-        } else if (val > borne0 && val < borne2) {
+      res.e2 = a1 * (val - borne1);
+      res.e1 = 1 - res.e2;
+      res.e3 = 0;
+    } else if (val > borne0 && val < borne2) {
 
-          res.e1 = 0;
-          res.e3 = a2 * (val - borne0);
-          res.e2 = 1 - res.e3;
-        } else if (val >= borne2) {
+      res.e1 = 0;
+      res.e3 = a2 * (val - borne0);
+      res.e2 = 1 - res.e3;
+    } else if (val >= borne2) {
 
-          res.e1 = 0;
-          res.e2 = 0;
-          res.e3 = 1;
-        } else if (val == borne0) {
+      res.e1 = 0;
+      res.e2 = 0;
+      res.e3 = 1;
+    } else if (val == borne0) {
 
-          res.e1 = 0;
-          res.e2 = 1;
-          res.e3 = 0;
-        }
+      res.e1 = 0;
+      res.e2 = 1;
+      res.e3 = 0;
+    }
 
-        resolve({vitesse:Math.exp(res.e2 * 2) - 1,rotation: (res.e3 * Math.PI / 6) - (res.e1 * Math.PI / 6)});
-      })
+    resolve({vitesse: Math.exp(res.e2 * 2) - 1, rotation: (res.e3 * Math.PI / 6) - (res.e1 * Math.PI / 6)});
+  })
 };
