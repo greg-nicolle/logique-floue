@@ -1,5 +1,4 @@
-class Sensor {
-  constructor(longueur,largeur,rotation){
+var Sensor  = function (longueur,largeur,rotation){
     this.Mesh = new Mesh("capteur");
     this.Mesh.loadFromObjFile("data/cone.obj");
     this.Mat = new Material("capteur", "data/shader/default.vShader", "data/shader/default.fShader",
@@ -23,5 +22,4 @@ class Sensor {
     this.xOffset = longueur;
     this.yOffset = largeur;
     this.rotation = rotation;
-  }
-}
+};

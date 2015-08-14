@@ -1,8 +1,8 @@
 {
-  "name": "Echange_de_fichier",
+  "name": "fuzzy_logic",
   "main": "./sources/logique_flou.html",
   "window": {
-    "fullscreen": true,
+    "fullscreen": false,
     "toolbar": true,
     "frame": true
   },

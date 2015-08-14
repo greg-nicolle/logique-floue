@@ -1,11 +1,100 @@
 /**
  * Created by greg on 05/03/15.
  */
-
 var logique = require('./logique');
 var maps = require('./maps');
 
-var robot = {};
+//TODO move that
+var Sensor = function (longueur, largeur, rotation) {
+  this.Mesh = new Mesh("capteur");
+  this.Mesh.loadFromObjFile("data/cone.obj");
+  this.Mat = new Material("capteur", "data/shader/default.vShader", "data/shader/default.fShader",
+      function (mat) {
+        var texture = new Texture("data/grass_diffuse.png");
+        texture.minFilter = GL.LINEAR_MIPMAP_LINEAR;
+        mat.uniforms["texture0"].texture = texture;
+      });
+  this.Mat.blendEquation = GL.FUNC_ADD;
+  this.Mat.dstBlend = GL.ZERO;
+  this.Mat.srcBlend = GL.ONE;
+
+  this.appartenance = {};
+  this.appartenance.e1 = 0;
+  this.appartenance.e2 = 0;
+  this.appartenance.e3 = 0;
+
+  this.Object = new Object3D(this.Mesh, this.Mat);
+  this.Object.setScale(10, 10, 10);
+
+  this.xOffset = longueur;
+  this.yOffset = largeur;
+  this.rotation = rotation;
+};
+var Robot = function (longueur, largeur, path) {
+  this.longueur = longueur;
+  this.largeur = largeur;
+  this.Mesh = new Mesh();
+  this.Mesh.loadFromObjFile(path);
+  this.Mat = new Material("robot", "data/shader/default.vShader", "data/shader/default.fShader",
+      function (mat) {
+        var texture = new Texture("data/0001.BMP");
+        mat.uniforms["texture0"].texture = texture;
+      });
+
+
+  this.Mat.blendEquation = GL.FUNC_ADD;
+  this.Mat.dstBlend = GL.ZERO;
+  this.Mat.srcBlend = GL.ONE;
+  this.Object = new Object3D(this.Mesh, this.Mat);
+  this.Object.setScale(100, 100, 100);
+
+  this.Object.setPosition(0, 0, 0);
+  this.Object.setRotation(0, -Math.PI / 2, 0);
+
+  this.sensors = [];
+
+  this.sensors.push(new Sensor(this.longueur * ratio, this.largeur / 2, -Math.PI / 4));
+  this.sensors.push(new Sensor(this.longueur * ratio, this.largeur / 4, 0));
+  this.sensors.push(new Sensor(this.longueur * ratio, -this.largeur / 4, 0));
+  this.sensors.push(new Sensor(this.longueur * ratio, -this.largeur / 2, Math.PI / 4));
+  this.sensors.push(new Sensor(this.longueur * ratio - this.longueur / 4, -this.largeur / 2, Math.PI / 2));
+  this.sensors.push(new Sensor(this.longueur * ratio - this.longueur / 2, -this.largeur / 2, Math.PI / 2));
+  this.sensors.push(new Sensor(-this.longueur * (1 - ratio) + this.longueur / 4, -this.largeur / 2, Math.PI / 2));
+  this.sensors.push(new Sensor(this.longueur * ratio - this.longueur / 4, this.largeur / 2, -Math.PI / 2));
+  this.sensors.push(new Sensor(this.longueur * ratio - this.longueur / 2, this.largeur / 2, -Math.PI / 2));
+  this.sensors.push(new Sensor(-this.longueur * (1 - ratio) + this.longueur / 4, this.largeur / 2, -Math.PI / 2));
+  this.sensors.push(new Sensor(-this.longueur * (1 - ratio), this.largeur / 2, -3 * Math.PI / 4));
+  this.sensors.push(new Sensor(-this.longueur * (1 - ratio), this.largeur / 4, Math.PI));
+  this.sensors.push(new Sensor(-this.longueur * (1 - ratio), -this.largeur / 4, Math.PI));
+  this.sensors.push(new Sensor(-this.longueur * (1 - ratio), -this.largeur / 2, 3 * Math.PI / 4));
+
+};
+Robot.prototype.getPosition = function () {
+  return this.Object.position;
+};
+Robot.prototype.getRotation = function () {
+  return this.Object.rotation[1];
+};
+Robot.prototype.move = function (v) {
+  this.Object.setPosition(this.Object.position[0] - v * Math.sin(this.Object.rotation[1]), 0
+      , this.Object.position[2] - v * Math.cos(this.Object.rotation[1]));
+  console.log('v:'+v)
+};
+Robot.prototype.calcul_position = function (input) {
+  var vec = {};
+  vec.x = -Math.cos(Math.PI / 2) * Math.sin(this.getRotation) + Math.sin(Math.PI / 2) * Math.cos(this.getRotation);
+  vec.z = -Math.sin(Math.PI / 2) * Math.sin(this.getRotation) - Math.cos(Math.PI / 2) * Math.cos(this.getRotation);
+
+  var position = {};
+  position.x = this.Object.position[0] - input.longueur * Math.sin(this.getRotation) + vec.x * input.largeur;
+  position.z = this.Object.position[2] - input.longueur * Math.cos(this.getRotation) + vec.z * input.largeur;
+
+  input.Object.setPosition(position.x, 40, position.z);
+  input.Object.setRotation(0, this.getRotation + input.rotation, 0);
+};
+
+
+var robot = new Robot(170, 450, "data/9112.obj");
 var obstacles = [];
 var capteurs = [];
 var reactors = [];
@@ -133,33 +222,33 @@ function start() {
     outlineMat.uniforms["invScreenSize"].value = vec2.fromValues(1 / size.w, 1 / size.h);
   }
 
-  init_robot();
-  init_obstacles();
-  init_sky();
+  //init_robot();
+  //init_obstacles();
+  //init_sky();
 
   setInterval(function () {
     if (e_pause) {
-      robot.Object.setPosition(robot.Object.position[0] - vitesse * Math.sin(robot.Object.rotation[1]), 0
-          , robot.Object.position[2] - vitesse * Math.cos(robot.Object.rotation[1]));
+      console.log('v:'+vitesse)
+      robot.move(vitesse);
 
-      camera.setPosition(camera.position[0] - vitesse * Math.sin(robot.Object.rotation[1]),
+      camera.setPosition(camera.position[0] - vitesse * Math.sin(robot.getRotation()),
           camera.position[1],
-          camera.position[2] - vitesse * Math.cos(robot.Object.rotation[1]));
-      camera.setTarget(robot.Object.position[0], robot.Object.position[1], robot.Object.position[2]);
+          camera.position[2] - vitesse * Math.cos(robot.getRotation()));
+      camera.setTarget(robot.getPosition()[0], robot.getPosition()[1], robot.getPosition()[2]);//TODO horrible
 
     }
     var P = [];
-    for (var i in capteurs) {
-      calcul_position(capteurs[i]);
+    for (var i in robot.sensors) {
+      //robot.calcul_position(capteurs[i]);
       if (e_pause) {
-        P.push(calcul_droite(capteurs[i])
+        P.push(calcul_droite(robot.sensors[i])
             .then(triAnsemble));
       }
     }
     Promise.all(P)
         .then(tempo);
     for (var i in reactors) {
-      calcul_position(reactors[i]);
+      //robot.calcul_position(reactors[i]);
     }
   }, 25);
 
@@ -181,31 +270,35 @@ function start() {
     //renderer.renderObject(groundObject);
     renderer.renderObject(robot.Object);
 
-    if (e_capteur) {
-      for (var i in capteurs) {
-        renderer.renderObject(capteurs[i].Object);
-      }
-    }
-    for (var i in obstacles) {
-      renderer.renderObject(obstacles[i].Object);
-    }
 
-    renderer.renderObject(screenQuad, outlineMat);
-    if (!e_nitro) {
-      for (var i in reactors) {
-        renderer.renderObject(reactors[i].Object);
-      }
-    }
-    renderer.renderObject(skyObject);
+    //if (e_capteur) {
+    //  for (var i in capteurs) {
+    //    renderer.renderObject(capteurs[i].Object);
+    //  }
+    //}
+    //for (var i in obstacles) {
+    //  renderer.renderObject(obstacles[i].Object);
+    //}
+
+    //renderer.renderObject(screenQuad, outlineMat);
+    //if (!e_nitro) {
+    //  for (var i in reactors) {
+    //    renderer.renderObject(reactors[i].Object);
+    //  }
+    //}
+    //renderer.renderObject(skyObject);
 
     time += deltaTime;
     lightDirection[1] = (0.5 + 0.5 * Math.cos(time * 0.0005));
     vec3.normalize(lightDirection, lightDirection);
 
+
   }
 
   Events.AddEventListener(Events.onRender, render);
   Events.FireEvent(Events.onRender);
+
+
 }
 
 var init_sky = function () {
@@ -234,64 +327,9 @@ var init_sky = function () {
   skyObject.setPosition(0, -5000, 0);
 };
 
-var init_robot = function () {
-  var v = new Robot(170,450,"data/9112.obj");
-  robot.largeur = 170;
-  robot.longueur = 450;
-
-  robot.Mesh = new Mesh("robot");
-  robot.Mesh.loadFromObjFile("data/9112.obj");
-  robot.Mat = new Material("robot", "data/shader/default.vShader", "data/shader/default.fShader",
-      function (mat) {
-        var texture = new Texture("data/0001.BMP");
-        mat.uniforms["texture0"].texture = texture;
-      });
-  robot.Mat.blendEquation = GL.FUNC_ADD;
-  robot.Mat.dstBlend = GL.ZERO;
-  robot.Mat.srcBlend = GL.ONE;
-  robot.Object = new Object3D(robot.Mesh, robot.Mat);
-  robot.Object.setScale(100, 100, 100);
-
-  robot.Object.setPosition(0, 0, 0);
-  robot.Object.setRotation(0, -Math.PI / 2, 0);
-
-
-  var randomPos = function () {
-    return Math.random() - 0.5;
-  };
-
-
-  var reactorMesh = new Mesh("generatedReactor");
-  reactorMesh.primitiveType = GL.POINTS;
-  for (var i = 0; i < 300; ++i)
-    reactorMesh._positions.push(randomPos(), randomPos(), randomPos());
-
-
-  var reactorMat = new Material("reactor", "data/shader/reactor.vShader", "data/shader/reactor.fShader",
-      function (mat) {
-        mat.uniforms["texture0"].texture = new Texture("data/smoke.png");
-      });
-  reactorMat.blendEquation = GL.FUNC_ADD;
-  reactorMat.zWrite = false;
-  reactorMat.srcBlend = GL.SRC_ALPHA;
-  reactorMat.dstBlend = GL.ONE_MINUS_SRC_ALPHA;
-
-
-  reactors[0] = {};
-  reactors[0].Object = new Object3D(reactorMesh, reactorMat);
-  reactors[0].longueur = -robot.longueur * (1 - ratio);
-  reactors[0].largeur = robot.largeur / 4;
-  reactors[0].rotation = 0;
-
-  reactors[1] = {};
-  reactors[1].Object = new Object3D(reactorMesh, reactorMat);
-  reactors[1].longueur = -robot.longueur * (1 - ratio);
-  reactors[1].largeur = -robot.largeur / 4;
-  reactors[1].rotation = 0
-
-
-  init_capteurs();
-};
+//var init_robot = function () {
+//  robot = new Robot(170,450,"data/9112.obj");
+//};
 
 var init_obstacles = function () {
   var groundMesh = new Mesh("ground");
@@ -335,94 +373,13 @@ var init_obstacles = function () {
   }
 }
 
-var init_capteurs = function () {
-  var tmpcapteurs = {};
-  tmpcapteurs.Mesh = new Mesh("capteur");
-  tmpcapteurs.Mesh.loadFromObjFile("data/cone.obj");
-  tmpcapteurs.Mat = new Material("capteur", "data/shader/default.vShader", "data/shader/default.fShader",
-      function (mat) {
-        var texture = new Texture("data/grass_diffuse.png");
-        texture.minFilter = GL.LINEAR_MIPMAP_LINEAR;
-        mat.uniforms["texture0"].texture = texture;
-      });
-  tmpcapteurs.Mat.blendEquation = GL.FUNC_ADD;
-  tmpcapteurs.Mat.dstBlend = GL.ZERO;
-  tmpcapteurs.Mat.srcBlend = GL.ONE;
-
-  for (var i = 0; i < 15; i++) {
-    capteurs[i] = {};
-    capteurs[i].appartenance = {};
-    capteurs[i].appartenance.e1 = 0;
-    capteurs[i].appartenance.e2 = 0;
-    capteurs[i].appartenance.e3 = 0;
-
-    capteurs[i].Object = new Object3D(tmpcapteurs.Mesh, tmpcapteurs.Mat);
-    capteurs[i].Object.setScale(10, 10, 10);
-  }
-
-  capteurs[0].longueur = robot.longueur * ratio;
-  capteurs[0].largeur = robot.largeur / 2;
-  capteurs[0].rotation = -Math.PI / 4;
-
-  capteurs[1].longueur = robot.longueur * ratio;
-  capteurs[1].largeur = robot.largeur / 4;
-  capteurs[1].rotation = 0;
-
-  capteurs[2].longueur = robot.longueur * ratio;
-  capteurs[2].largeur = -robot.largeur / 4;
-  capteurs[2].rotation = 0;
-
-  capteurs[3].longueur = robot.longueur * ratio;
-  capteurs[3].largeur = -robot.largeur / 2;
-  capteurs[3].rotation = Math.PI / 4;
-
-  capteurs[4].longueur = robot.longueur * ratio - robot.longueur / 4;
-  capteurs[4].largeur = -robot.largeur / 2;
-  capteurs[4].rotation = Math.PI / 2;
-
-  capteurs[5].longueur = robot.longueur * ratio - robot.longueur / 2;
-  capteurs[5].largeur = -robot.largeur / 2;
-  capteurs[5].rotation = Math.PI / 2;
-
-  capteurs[6].longueur = -robot.longueur * (1 - ratio) + robot.longueur / 4;
-  capteurs[6].largeur = -robot.largeur / 2;
-  capteurs[6].rotation = Math.PI / 2;
-
-  capteurs[7].longueur = robot.longueur * ratio - robot.longueur / 4;
-  capteurs[7].largeur = robot.largeur / 2;
-  capteurs[7].rotation = -Math.PI / 2;
-
-  capteurs[8].longueur = robot.longueur * ratio - robot.longueur / 2;
-  capteurs[8].largeur = robot.largeur / 2;
-  capteurs[8].rotation = -Math.PI / 2;
-
-  capteurs[9].longueur = -robot.longueur * (1 - ratio) + robot.longueur / 4;
-  capteurs[9].largeur = robot.largeur / 2;
-  capteurs[9].rotation = -Math.PI / 2
-
-  capteurs[10].longueur = -robot.longueur * (1 - ratio);
-  capteurs[10].largeur = robot.largeur / 2;
-  capteurs[10].rotation = -3 * Math.PI / 4;
-
-  capteurs[11].longueur = -robot.longueur * (1 - ratio);
-  capteurs[11].largeur = robot.largeur / 4;
-  capteurs[11].rotation = Math.PI;
-
-  capteurs[12].longueur = -robot.longueur * (1 - ratio);
-  capteurs[12].largeur = -robot.largeur / 4;
-  capteurs[12].rotation = Math.PI;
-
-  capteurs[13].longueur = -robot.longueur * (1 - ratio);
-  capteurs[13].largeur = -robot.largeur / 2;
-  capteurs[13].rotation = 3 * Math.PI / 4;
-
-}
-
-
 var tempo = function () {
   logique.defloutage(capteurs)
       .then(logique.defu)
       .then(function (result) {
+        console.log("v1:"+vitessemax)
+        console.log("v2:"+vitessemin)
+        console.log("v3:"+result.vitesse)
         vitesse = vitessemax * result.vitesse + vitessemin;
         robot.Object.setRotation(0, robot.Object.rotation[1] + result.rotation, 0);
       })
@@ -583,5 +540,3 @@ var triAnsemble = function (input) {
     resolve();
   });
 };
-
-
