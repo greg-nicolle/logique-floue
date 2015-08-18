@@ -27,10 +27,11 @@ var Sensor = function (longueur, largeur, rotation) {
   this.Object.setScale(10, 10, 10);
 
   this.xOffset = longueur;
-  this.yOffset = largeur;
+  this.zOffset = largeur;
   this.rotation = rotation;
 };
 var Robot = function (longueur, largeur, path) {
+  this.ratio = 0.75;
   this.longueur = longueur;
   this.largeur = largeur;
   this.Mesh = new Mesh();
@@ -53,20 +54,20 @@ var Robot = function (longueur, largeur, path) {
 
   this.sensors = [];
 
-  this.sensors.push(new Sensor(this.longueur * ratio, this.largeur / 2, -Math.PI / 4));
-  this.sensors.push(new Sensor(this.longueur * ratio, this.largeur / 4, 0));
-  this.sensors.push(new Sensor(this.longueur * ratio, -this.largeur / 4, 0));
-  this.sensors.push(new Sensor(this.longueur * ratio, -this.largeur / 2, Math.PI / 4));
-  this.sensors.push(new Sensor(this.longueur * ratio - this.longueur / 4, -this.largeur / 2, Math.PI / 2));
-  this.sensors.push(new Sensor(this.longueur * ratio - this.longueur / 2, -this.largeur / 2, Math.PI / 2));
-  this.sensors.push(new Sensor(-this.longueur * (1 - ratio) + this.longueur / 4, -this.largeur / 2, Math.PI / 2));
-  this.sensors.push(new Sensor(this.longueur * ratio - this.longueur / 4, this.largeur / 2, -Math.PI / 2));
-  this.sensors.push(new Sensor(this.longueur * ratio - this.longueur / 2, this.largeur / 2, -Math.PI / 2));
-  this.sensors.push(new Sensor(-this.longueur * (1 - ratio) + this.longueur / 4, this.largeur / 2, -Math.PI / 2));
-  this.sensors.push(new Sensor(-this.longueur * (1 - ratio), this.largeur / 2, -3 * Math.PI / 4));
-  this.sensors.push(new Sensor(-this.longueur * (1 - ratio), this.largeur / 4, Math.PI));
-  this.sensors.push(new Sensor(-this.longueur * (1 - ratio), -this.largeur / 4, Math.PI));
-  this.sensors.push(new Sensor(-this.longueur * (1 - ratio), -this.largeur / 2, 3 * Math.PI / 4));
+  this.sensors.push(new Sensor(this.longueur * this.ratio, this.largeur / 2, -Math.PI / 4));
+  this.sensors.push(new Sensor(this.longueur * this.ratio, this.largeur / 4, 0));
+  this.sensors.push(new Sensor(this.longueur * this.ratio, -this.largeur / 4, 0));
+  this.sensors.push(new Sensor(this.longueur * this.ratio, -this.largeur / 2, Math.PI / 4));
+  this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 4, -this.largeur / 2, Math.PI / 2));
+  this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 2, -this.largeur / 2, Math.PI / 2));
+  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio) + this.longueur / 4, -this.largeur / 2, Math.PI / 2));
+  this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 4, this.largeur / 2, -Math.PI / 2));
+  this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 2, this.largeur / 2, -Math.PI / 2));
+  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio) + this.longueur / 4, this.largeur / 2, -Math.PI / 2));
+  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), this.largeur / 2, -3 * Math.PI / 4));
+  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), this.largeur / 4, Math.PI));
+  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 4, Math.PI));
+  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 2, 3 * Math.PI / 4));
 
 };
 Robot.prototype.getPosition = function () {
@@ -78,19 +79,18 @@ Robot.prototype.getRotation = function () {
 Robot.prototype.move = function (v) {
   this.Object.setPosition(this.Object.position[0] - v * Math.sin(this.Object.rotation[1]), 0
       , this.Object.position[2] - v * Math.cos(this.Object.rotation[1]));
-  console.log('v:'+v)
 };
 Robot.prototype.calcul_position = function (input) {
   var vec = {};
-  vec.x = -Math.cos(Math.PI / 2) * Math.sin(this.getRotation) + Math.sin(Math.PI / 2) * Math.cos(this.getRotation);
-  vec.z = -Math.sin(Math.PI / 2) * Math.sin(this.getRotation) - Math.cos(Math.PI / 2) * Math.cos(this.getRotation);
+  vec.x = -Math.cos(Math.PI / 2) * Math.sin(this.getRotation()) + Math.sin(Math.PI / 2) * Math.cos(this.getRotation());
+  vec.z = -Math.sin(Math.PI / 2) * Math.sin(this.getRotation()) - Math.cos(Math.PI / 2) * Math.cos(this.getRotation());
 
   var position = {};
-  position.x = this.Object.position[0] - input.longueur * Math.sin(this.getRotation) + vec.x * input.largeur;
-  position.z = this.Object.position[2] - input.longueur * Math.cos(this.getRotation) + vec.z * input.largeur;
+  position.x = this.Object.position[0] - input.xOffset * Math.sin(this.getRotation()) + vec.x * input.zOffset;
+  position.z = this.Object.position[2] - input.xOffset * Math.cos(this.getRotation()) + vec.z * input.zOffset;
 
   input.Object.setPosition(position.x, 40, position.z);
-  input.Object.setRotation(0, this.getRotation + input.rotation, 0);
+  input.Object.setRotation(0, this.getRotation() + input.rotation, 0);
 };
 
 
@@ -222,13 +222,11 @@ function start() {
     outlineMat.uniforms["invScreenSize"].value = vec2.fromValues(1 / size.w, 1 / size.h);
   }
 
-  //init_robot();
-  //init_obstacles();
-  //init_sky();
+  init_obstacles();
+  init_sky();
 
   setInterval(function () {
     if (e_pause) {
-      console.log('v:'+vitesse)
       robot.move(vitesse);
 
       camera.setPosition(camera.position[0] - vitesse * Math.sin(robot.getRotation()),
@@ -239,7 +237,7 @@ function start() {
     }
     var P = [];
     for (var i in robot.sensors) {
-      //robot.calcul_position(capteurs[i]);
+      robot.calcul_position(robot.sensors[i]);
       if (e_pause) {
         P.push(calcul_droite(robot.sensors[i])
             .then(triAnsemble));
@@ -271,15 +269,15 @@ function start() {
     renderer.renderObject(robot.Object);
 
 
-    //if (e_capteur) {
-    //  for (var i in capteurs) {
-    //    renderer.renderObject(capteurs[i].Object);
-    //  }
-    //}
-    //for (var i in obstacles) {
-    //  renderer.renderObject(obstacles[i].Object);
-    //}
-
+    if (e_capteur) {
+      for (var i in robot.sensors) {
+        renderer.renderObject(robot.sensors[i].Object);
+      }
+    }
+    for (var i in obstacles) {
+      renderer.renderObject(obstacles[i].Object);
+    }
+    //
     //renderer.renderObject(screenQuad, outlineMat);
     //if (!e_nitro) {
     //  for (var i in reactors) {
@@ -287,7 +285,6 @@ function start() {
     //  }
     //}
     //renderer.renderObject(skyObject);
-
     time += deltaTime;
     lightDirection[1] = (0.5 + 0.5 * Math.cos(time * 0.0005));
     vec3.normalize(lightDirection, lightDirection);
@@ -326,10 +323,6 @@ var init_sky = function () {
   skyObject.setScale(camera.far * 0.7, camera.far * 0.7, camera.far * 0.7);
   skyObject.setPosition(0, -5000, 0);
 };
-
-//var init_robot = function () {
-//  robot = new Robot(170,450,"data/9112.obj");
-//};
 
 var init_obstacles = function () {
   var groundMesh = new Mesh("ground");
@@ -374,12 +367,9 @@ var init_obstacles = function () {
 }
 
 var tempo = function () {
-  logique.defloutage(capteurs)
+  logique.defloutage(robot.sensors)
       .then(logique.defu)
       .then(function (result) {
-        console.log("v1:"+vitessemax)
-        console.log("v2:"+vitessemin)
-        console.log("v3:"+result.vitesse)
         vitesse = vitessemax * result.vitesse + vitessemin;
         robot.Object.setRotation(0, robot.Object.rotation[1] + result.rotation, 0);
       })
