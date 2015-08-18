@@ -1,102 +1,8 @@
-/**
- * Created by greg on 05/03/15.
- */
 var logique = require('./logique');
 var maps = require('./maps');
 
-//TODO move that
-var Sensor = function (longueur, largeur, rotation) {
-  this.Mesh = new Mesh("capteur");
-  this.Mesh.loadFromObjFile("data/cone.obj");
-  this.Mat = new Material("capteur", "data/shader/default.vShader", "data/shader/default.fShader",
-      function (mat) {
-        var texture = new Texture("data/grass_diffuse.png");
-        texture.minFilter = GL.LINEAR_MIPMAP_LINEAR;
-        mat.uniforms["texture0"].texture = texture;
-      });
-  this.Mat.blendEquation = GL.FUNC_ADD;
-  this.Mat.dstBlend = GL.ZERO;
-  this.Mat.srcBlend = GL.ONE;
-
-  this.appartenance = {};
-  this.appartenance.e1 = 0;
-  this.appartenance.e2 = 0;
-  this.appartenance.e3 = 0;
-
-  this.Object = new Object3D(this.Mesh, this.Mat);
-  this.Object.setScale(10, 10, 10);
-
-  this.xOffset = longueur;
-  this.zOffset = largeur;
-  this.rotation = rotation;
-};
-var Robot = function (longueur, largeur, path) {
-  this.ratio = 0.75;
-  this.longueur = longueur;
-  this.largeur = largeur;
-  this.Mesh = new Mesh();
-  this.Mesh.loadFromObjFile(path);
-  this.Mat = new Material("robot", "data/shader/default.vShader", "data/shader/default.fShader",
-      function (mat) {
-        var texture = new Texture("data/0001.BMP");
-        mat.uniforms["texture0"].texture = texture;
-      });
-
-
-  this.Mat.blendEquation = GL.FUNC_ADD;
-  this.Mat.dstBlend = GL.ZERO;
-  this.Mat.srcBlend = GL.ONE;
-  this.Object = new Object3D(this.Mesh, this.Mat);
-  this.Object.setScale(100, 100, 100);
-
-  this.Object.setPosition(0, 0, 0);
-  this.Object.setRotation(0, -Math.PI / 2, 0);
-
-  this.sensors = [];
-
-  this.sensors.push(new Sensor(this.longueur * this.ratio, this.largeur / 2, -Math.PI / 4));
-  this.sensors.push(new Sensor(this.longueur * this.ratio, this.largeur / 4, 0));
-  this.sensors.push(new Sensor(this.longueur * this.ratio, -this.largeur / 4, 0));
-  this.sensors.push(new Sensor(this.longueur * this.ratio, -this.largeur / 2, Math.PI / 4));
-  this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 4, -this.largeur / 2, Math.PI / 2));
-  this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 2, -this.largeur / 2, Math.PI / 2));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio) + this.longueur / 4, -this.largeur / 2, Math.PI / 2));
-  this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 4, this.largeur / 2, -Math.PI / 2));
-  this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 2, this.largeur / 2, -Math.PI / 2));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio) + this.longueur / 4, this.largeur / 2, -Math.PI / 2));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), this.largeur / 2, -3 * Math.PI / 4));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), this.largeur / 4, Math.PI));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 4, Math.PI));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 2, 3 * Math.PI / 4));
-
-};
-Robot.prototype.getPosition = function () {
-  return this.Object.position;
-};
-Robot.prototype.getRotation = function () {
-  return this.Object.rotation[1];
-};
-Robot.prototype.move = function (v) {
-  this.Object.setPosition(this.Object.position[0] - v * Math.sin(this.Object.rotation[1]), 0
-      , this.Object.position[2] - v * Math.cos(this.Object.rotation[1]));
-};
-Robot.prototype.calcul_position = function (input) {
-  var vec = {};
-  vec.x = -Math.cos(Math.PI / 2) * Math.sin(this.getRotation()) + Math.sin(Math.PI / 2) * Math.cos(this.getRotation());
-  vec.z = -Math.sin(Math.PI / 2) * Math.sin(this.getRotation()) - Math.cos(Math.PI / 2) * Math.cos(this.getRotation());
-
-  var position = {};
-  position.x = this.Object.position[0] - input.xOffset * Math.sin(this.getRotation()) + vec.x * input.zOffset;
-  position.z = this.Object.position[2] - input.xOffset * Math.cos(this.getRotation()) + vec.z * input.zOffset;
-
-  input.Object.setPosition(position.x, 40, position.z);
-  input.Object.setRotation(0, this.getRotation() + input.rotation, 0);
-};
-
-
-var robot = new Robot(170, 450, "data/9112.obj");
+var robot = new Robot(170, 450, 'data/9112.obj');
 var obstacles = [];
-var capteurs = [];
 var reactors = [];
 
 var e_capteur = true;
@@ -174,7 +80,7 @@ var reboot = function () {
 
 function start() {
   Events.InitializeEvents();
-  var canvas = document.getElementById("renderingCanvas");
+  var canvas = document.getElementById('renderingCanvas');
 
   camera = new Camera({
     pos: {x: -2500, y: 1000, z: 2500},
@@ -204,22 +110,22 @@ function start() {
 
   var quad = new Mesh();
   quad._positions.push(-1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0);
-  var outlineMat = new Material("outline", "data/shader/renderTexture.vShader", "data/shader/outline.fShader",
-      function (mat) {
-        mat.uniforms["texture0"].texture = depthTarget;
-        mat.uniforms["invScreenSize"].value = vec2.fromValues(1 / canvas.width, 1 / canvas.height);
-      });
+  var outlineMat = new Material('outline', 'data/shader/renderTexture.vShader', 'data/shader/outline.fShader',
+    function (mat) {
+      mat.uniforms['texture0'].texture = depthTarget;
+      mat.uniforms['invScreenSize'].value = vec2.fromValues(1 / canvas.width, 1 / canvas.height);
+    });
   outlineMat.zWrite = false;
   outlineMat.zTest = false;
   outlineMat.blendEquation = GL.FUNC_ADD;
 
   var screenQuad = new Object3D(quad, outlineMat);
-  var depthMat = new Material("depth", "data/shader/depth.vShader", "data/shader/depth.fShader");
+  var depthMat = new Material('depth', 'data/shader/depth.vShader', 'data/shader/depth.fShader');
   depthMat.blendEquation = false;
 
   function resize(size) {
     depthTarget.resize(renderer.gl, size.w, size.h);
-    outlineMat.uniforms["invScreenSize"].value = vec2.fromValues(1 / size.w, 1 / size.h);
+    outlineMat.uniforms['invScreenSize'].value = vec2.fromValues(1 / size.w, 1 / size.h);
   }
 
   init_obstacles();
@@ -230,8 +136,8 @@ function start() {
       robot.move(vitesse);
 
       camera.setPosition(camera.position[0] - vitesse * Math.sin(robot.getRotation()),
-          camera.position[1],
-          camera.position[2] - vitesse * Math.cos(robot.getRotation()));
+        camera.position[1],
+        camera.position[2] - vitesse * Math.cos(robot.getRotation()));
       camera.setTarget(robot.getPosition()[0], robot.getPosition()[1], robot.getPosition()[2]);//TODO horrible
 
     }
@@ -239,12 +145,22 @@ function start() {
     for (var i in robot.sensors) {
       robot.calcul_position(robot.sensors[i]);
       if (e_pause) {
-        P.push(calcul_droite(robot.sensors[i])
-            .then(triAnsemble));
+        P.push(logique.calcul_droite(robot.sensors[i],obstacles)
+          .then(logique.triAnsemble));
       }
     }
     Promise.all(P)
-        .then(tempo);
+      .then(function () {
+        return logique.defloutage(robot.sensors)
+      })
+      .then(logique.defu)
+      .then(function (result) {
+        vitesse = vitessemax * result.vitesse + vitessemin;
+        robot.rotate(result.rotation);
+      })
+      .catch(function (err) {
+        console.log('error:' + err)
+      });
     for (var i in reactors) {
       //robot.calcul_position(reactors[i]);
     }
@@ -256,7 +172,7 @@ function start() {
     renderer.setCamera(camera);
 
     renderer.setRenderTarget(depthTarget);
-    renderer.clear(/*{r: 0.31, g: 0.59, b: 0.78, a: 1.0}*/null);
+    renderer.clear(null);
 
     renderer.renderObject(robot.Object, depthMat);
     for (var i in obstacles) {
@@ -264,8 +180,7 @@ function start() {
     }
 
     renderer.setRenderTarget(null);
-    renderer.clear(/*{r: 0.31, g: 0.59, b: 0.78, a: 1.0}*/null);
-    //renderer.renderObject(groundObject);
+    renderer.clear(null);
     renderer.renderObject(robot.Object);
 
 
@@ -277,14 +192,14 @@ function start() {
     for (var i in obstacles) {
       renderer.renderObject(obstacles[i].Object);
     }
-    //
-    //renderer.renderObject(screenQuad, outlineMat);
+
+    renderer.renderObject(screenQuad, outlineMat);
     //if (!e_nitro) {
     //  for (var i in reactors) {
     //    renderer.renderObject(reactors[i].Object);
     //  }
     //}
-    //renderer.renderObject(skyObject);
+    renderer.renderObject(skyObject);
     time += deltaTime;
     lightDirection[1] = (0.5 + 0.5 * Math.cos(time * 0.0005));
     vec3.normalize(lightDirection, lightDirection);
@@ -300,24 +215,24 @@ function start() {
 
 var init_sky = function () {
 
-  var noiseTex = new Texture("data/Noise.jpg");
+  var noiseTex = new Texture('data/Noise.jpg');
   noiseTex.wrapping = GL.REPEAT;
   noiseTex.magFilter = GL.LINEAR;
   noiseTex.minFilter = GL.LINEAR_MIPMAP_LINEAR;
 
-  var skyTexture = new Texture("data/GradientSky.png");
+  var skyTexture = new Texture('data/GradientSky.png');
 
-  var skyMesh = new Mesh("sky");
-  skyMesh.loadFromObjFile("data/Sphere.obj");
-  var skyMat = new Material("sky", "data/shader/sky.vShader", "data/shader/sky.fShader",
-      function (mat) {
-        mat.uniforms["lightDir"].value = lightDirection;
-        mat.uniforms["texture0"].texture = skyTexture;
-        mat.uniforms["texture1"].texture = noiseTex;
+  var skyMesh = new Mesh('sky');
+  skyMesh.loadFromObjFile('data/Sphere.obj');
+  var skyMat = new Material('sky', 'data/shader/sky.vShader', 'data/shader/sky.fShader',
+    function (mat) {
+      mat.uniforms['lightDir'].value = lightDirection;
+      mat.uniforms['texture0'].texture = skyTexture;
+      mat.uniforms['texture1'].texture = noiseTex;
 
-        mat.uniforms["cloudDensity"].value = 0.25;
-        mat.uniforms["windSpeed"].value = vec2.fromValues(0.025, 0.015);
-      });
+      mat.uniforms['cloudDensity'].value = 0.25;
+      mat.uniforms['windSpeed'].value = vec2.fromValues(0.025, 0.015);
+    });
   skyMat.doubleSided = true;
   skyObject = new Object3D(skyMesh, skyMat);
   skyObject.setScale(camera.far * 0.7, camera.far * 0.7, camera.far * 0.7);
@@ -325,14 +240,14 @@ var init_sky = function () {
 };
 
 var init_obstacles = function () {
-  var groundMesh = new Mesh("ground");
-  groundMesh.loadFromObjFile("data/plateau.obj");
-  var groundMat = new Material("ground", "data/shader/default.vShader", "data/shader/default.fShader",
-      function (mat) {
-        var texture = new Texture("data/grass_diffuse.png");
-        texture.minFilter = GL.LINEAR_MIPMAP_LINEAR;
-        mat.uniforms["texture0"].texture = texture;
-      });
+  var groundMesh = new Mesh('ground');
+  groundMesh.loadFromObjFile('data/plateau.obj');
+  var groundMat = new Material('ground', 'data/shader/default.vShader', 'data/shader/default.fShader',
+    function (mat) {
+      var texture = new Texture('data/grass_diffuse.png');
+      texture.minFilter = GL.LINEAR_MIPMAP_LINEAR;
+      mat.uniforms['texture0'].texture = texture;
+    });
   obstacles[0] = {};
   obstacles[0].Object = new Object3D(groundMesh, groundMat);
   obstacles[0].Object.setPosition(0, 0, 0);
@@ -342,12 +257,12 @@ var init_obstacles = function () {
   obstacles[0].longueur = 25000;
 
 
-  var houseMesh = new Mesh("house");
-  houseMesh.loadFromObjFile("data/Container.obj");
-  var houseMat = new Material("house", "data/shader/default.vShader", "data/shader/default.fShader",
-      function (mat) {
-        mat.uniforms["texture0"].texture = new Texture("data/Container.BMP");
-      });
+  var houseMesh = new Mesh('house');
+  houseMesh.loadFromObjFile('data/Container.obj');
+  var houseMat = new Material('house', 'data/shader/default.vShader', 'data/shader/default.fShader',
+    function (mat) {
+      mat.uniforms['texture0'].texture = new Texture('data/Container.BMP');
+    });
   houseMat.blendEquation = GL.FUNC_ADD;
   houseMat.dstBlend = GL.ZERO;
   houseMat.srcBlend = GL.ONE;
@@ -358,175 +273,10 @@ var init_obstacles = function () {
     obstacles[i].Object = new Object3D(houseMesh, houseMat);
     obstacles[i].Object.setPosition(Math.random() * 25000 - 12500, 0, Math.random() * 25000 - 12500);
     obstacles[i].Object.setRotation(0, Math.random() * Math.PI - Math.PI / 2, 0);
-    //obstacles[i].Object.setPosition(3000,0,0);
     obstacles[i].Object.setScale(50, 50, 50);
-    //obstacles[i].Object.setRotation(0,-Math.PI/2,0);
     obstacles[i].largeur = 500;
     obstacles[i].longueur = 1200;
   }
-}
-
-var tempo = function () {
-  logique.defloutage(robot.sensors)
-      .then(logique.defu)
-      .then(function (result) {
-        vitesse = vitessemax * result.vitesse + vitessemin;
-        robot.Object.setRotation(0, robot.Object.rotation[1] + result.rotation, 0);
-      })
-      .catch(function (err) {
-        console.log("error:" + err)
-      });
 };
 
-var calcul_droite = function (input) {
-  return new Promise(function (resolve, reject) {
-    var a = Math.cos(input.Object.rotation[1]) / Math.sin(input.Object.rotation[1]);
 
-    var b = input.Object.position[2] - a * input.Object.position[0];
-
-
-    var min = Infinity;
-
-    for (var i in obstacles) {
-
-      var vec = {};
-      vec.x = -Math.cos(Math.PI / 2) * Math.sin(obstacles[i].Object.rotation[1]) + Math.sin(Math.PI / 2) * Math.cos(obstacles[i].Object.rotation[1]);
-      vec.z = -Math.sin(Math.PI / 2) * Math.sin(obstacles[i].Object.rotation[1]) - Math.cos(Math.PI / 2) * Math.cos(obstacles[i].Object.rotation[1]);
-
-
-      var position = [];
-      position[0] = {};
-      position[0].x = obstacles[i].Object.position[0] - obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 + vec.x * obstacles[i].largeur / 2;
-      position[0].y = obstacles[i].Object.position[2] - obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 + vec.z * obstacles[i].largeur / 2;
-
-      position[1] = {};
-      position[1].x = obstacles[i].Object.position[0] - obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 - vec.x * obstacles[i].largeur / 2;
-      position[1].y = obstacles[i].Object.position[2] - obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 - vec.z * obstacles[i].largeur / 2;
-
-      position[2] = {};
-      position[2].x = obstacles[i].Object.position[0] + obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 - vec.x * obstacles[i].largeur / 2;
-      position[2].y = obstacles[i].Object.position[2] + obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 - vec.z * obstacles[i].largeur / 2;
-
-      position[3] = {};
-      position[3].x = obstacles[i].Object.position[0] + obstacles[i].longueur * Math.sin(obstacles[i].Object.rotation[1]) / 2 + vec.x * obstacles[i].largeur / 2;
-      position[3].y = obstacles[i].Object.position[2] + obstacles[i].longueur * Math.cos(obstacles[i].Object.rotation[1]) / 2 + vec.z * obstacles[i].largeur / 2;
-
-      var a1 = (position[1].y - position[0].y) / (position[1].x - position[0].x);
-      var b1 = position[1].y - a1 * position[1].x;
-
-      var a2 = (position[2].y - position[1].y) / (position[2].x - position[1].x);
-      var b2 = position[1].y - a2 * position[1].x;
-
-      var a3 = (position[2].y - position[3].y) / (position[2].x - position[3].x);
-      var b3 = position[2].y - a3 * position[2].x;
-
-      var a4 = (position[3].y - position[0].y) / (position[3].x - position[0].x);
-      var b4 = position[3].y - a4 * position[3].x;
-
-
-      var x1 = (b1 - b) / (a - a1);
-      var y1 = a * x1 + b;
-
-      if ((x1 < position[0].x && x1 > position[1].x) || (x1 > position[0].x && x1 < position[1].x)) {
-        if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x1) ||
-            (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x1)) &&
-            ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y1) ||
-            (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y1))) &&
-            min > (x1 - input.Object.position[0]) * (x1 - input.Object.position[0]) + (y1 - input.Object.position[2]) * (y1 - input.Object.position[2])) {
-
-          min = (x1 - input.Object.position[0]) * (x1 - input.Object.position[0]) + (y1 - input.Object.position[2]) * (y1 - input.Object.position[2]);
-        }
-      }
-
-      var x2 = (b2 - b) / (a - a2);
-      var y2 = a * x2 + b;
-
-      if ((x2 < position[1].x && x2 > position[2].x) || (x2 > position[1].x && x2 < position[2].x)) {
-        if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x2) ||
-            (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x2)) &&
-            ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y2) ||
-            (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y2))) &&
-            min > (x2 - input.Object.position[0]) * (x2 - input.Object.position[0]) + (y2 - input.Object.position[2]) * (y2 - input.Object.position[2])) {
-
-          min = (x2 - input.Object.position[0]) * (x2 - input.Object.position[0]) + (y2 - input.Object.position[2]) * (y2 - input.Object.position[2]);
-        }
-      }
-
-      var x3 = (b3 - b) / (a - a3);
-      var y3 = a * x3 + b;
-
-      if ((x3 < position[2].x && x3 > position[3].x) || (x3 > position[2].x && x3 < position[3].x)) {
-        if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x3) ||
-            (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x3)) &&
-            ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y3) ||
-            (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y3))) &&
-            min > (x3 - input.Object.position[0]) * (x3 - input.Object.position[0]) + (y3 - input.Object.position[2]) * (y3 - input.Object.position[2])) {
-
-          min = (x3 - input.Object.position[0]) * (x3 - input.Object.position[0]) + (y3 - input.Object.position[2]) * (y3 - input.Object.position[2]);
-        }
-      }
-
-      var x4 = (b4 - b) / (a - a4);
-      var y4 = a * x4 + b;
-
-      if ((x4 > position[3].x && x4 < position[0].x) || (x4 < position[3].x && x4 > position[0].x)) {
-        if ((((-Math.sin(input.Object.rotation[1]) > 0 && input.Object.position[0] < x4) ||
-            (-Math.sin(input.Object.rotation[1]) < 0 && input.Object.position[0] > x4)) &&
-            ((-Math.cos(input.Object.rotation[1]) > 0 && input.Object.position[2] < y4) ||
-            (-Math.cos(input.Object.rotation[1]) < 0 && input.Object.position[2] > y4))) &&
-            min > (x4 - input.Object.position[0]) * (x4 - input.Object.position[0]) + (y4 - input.Object.position[2]) * (y4 - input.Object.position[2])) {
-
-          min = (x4 - input.Object.position[0]) * (x4 - input.Object.position[0]) + (y4 - input.Object.position[2]) * (y4 - input.Object.position[2]);
-        }
-      }
-    }
-
-    var result = {};
-    result.borne1 = 400 - 20 * (input.rotation * input.rotation);
-    result.borne2 = 1000;
-    result.val = Math.sqrt(min);
-    result.cap = input;
-    resolve(result)
-  })
-};
-
-var triAnsemble = function (input) {
-
-  return new Promise(function (resolve, reject) {
-    var borne1 = input.borne1,
-        borne2 = input.borne2,
-        val = input.val,
-        cap = input.cap;
-    var borne0 = (borne2 + borne1) / 2;
-
-    var a1 = 1 / (borne0 - borne1);
-    var a2 = 1 / (borne2 - borne0);
-
-    if (val <= borne1) {
-      cap.appartenance.e1 = 1;
-      cap.appartenance.e2 = 0;
-      cap.appartenance.e3 = 0;
-    } else if (val > borne1 && val < borne0) {
-
-      cap.appartenance.e2 = a1 * (val - borne1);
-      cap.appartenance.e1 = 1 - cap.appartenance.e2;
-      cap.appartenance.e3 = 0;
-    } else if (val > borne0 && val < borne2) {
-
-      cap.appartenance.e1 = 0;
-      cap.appartenance.e3 = a2 * (val - borne0);
-      cap.appartenance.e2 = 1 - cap.appartenance.e3;
-    } else if (val >= borne2) {
-
-      cap.appartenance.e1 = 0;
-      cap.appartenance.e2 = 0;
-      cap.appartenance.e3 = 1;
-    } else if (val == borne0) {
-
-      cap.appartenance.e1 = 0;
-      cap.appartenance.e2 = 1;
-      cap.appartenance.e3 = 0;
-    }
-    resolve();
-  });
-};
