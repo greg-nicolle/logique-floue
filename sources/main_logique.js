@@ -1,7 +1,7 @@
 var logique = require('./logique');
 var maps = require('./maps');
 
-var robot = new Robot(170, 450, 'data/9112.obj');
+var robot = new Robot(450, 170, 'data/9112.obj');
 var obstacles = [];
 var reactors = [];
 
@@ -14,6 +14,7 @@ var vitessemin = 1;
 var ratio = 0.75;
 var test = [];
 var skyObject = {};
+var world = {};
 
 
 var lightDirection = vec3.fromValues(0.3, 0.5, -0.4);
@@ -129,7 +130,8 @@ function start() {
   }
 
   init_obstacles();
-  init_sky();
+  //init_sky();
+  world = new World(camera,lightDirection);
 
   setInterval(function () {
     if (e_pause) {
@@ -145,7 +147,7 @@ function start() {
     for (var i in robot.sensors) {
       robot.calcul_position(robot.sensors[i]);
       if (e_pause) {
-        P.push(logique.calcul_droite(robot.sensors[i],obstacles)
+        P.push(logique.calcul_droite(robot.sensors[i], obstacles)
           .then(logique.triAnsemble));
       }
     }
@@ -161,8 +163,8 @@ function start() {
       .catch(function (err) {
         console.log('error:' + err)
       });
-    for (var i in reactors) {
-      //robot.calcul_position(reactors[i]);
+    for (var i in robot.reactors) {
+      //robot.calcul_position(robot.reactors[i]);
     }
   }, 25);
 
@@ -183,7 +185,6 @@ function start() {
     renderer.clear(null);
     renderer.renderObject(robot.Object);
 
-
     if (e_capteur) {
       for (var i in robot.sensors) {
         renderer.renderObject(robot.sensors[i].Object);
@@ -194,22 +195,19 @@ function start() {
     }
 
     renderer.renderObject(screenQuad, outlineMat);
-    //if (!e_nitro) {
-    //  for (var i in reactors) {
-    //    renderer.renderObject(reactors[i].Object);
-    //  }
-    //}
-    renderer.renderObject(skyObject);
+    if (!e_nitro) {
+      for (var i in robot.reactors) {
+        renderer.renderObject(robot.reactors[i].Object);
+      }
+    }
+    renderer.renderObject(world.sky.Object);
     time += deltaTime;
     lightDirection[1] = (0.5 + 0.5 * Math.cos(time * 0.0005));
     vec3.normalize(lightDirection, lightDirection);
 
-
   }
-
   Events.AddEventListener(Events.onRender, render);
   Events.FireEvent(Events.onRender);
-
 
 }
 
@@ -256,7 +254,6 @@ var init_obstacles = function () {
   obstacles[0].largeur = 25000;
   obstacles[0].longueur = 25000;
 
-
   var houseMesh = new Mesh('house');
   houseMesh.loadFromObjFile('data/Container.obj');
   var houseMat = new Material('house', 'data/shader/default.vShader', 'data/shader/default.fShader',
@@ -266,7 +263,6 @@ var init_obstacles = function () {
   houseMat.blendEquation = GL.FUNC_ADD;
   houseMat.dstBlend = GL.ZERO;
   houseMat.srcBlend = GL.ONE;
-
 
   for (var i = 1; i < 30; i++) {
     obstacles[i] = {};
@@ -278,5 +274,3 @@ var init_obstacles = function () {
     obstacles[i].longueur = 1200;
   }
 };
-
-

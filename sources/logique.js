@@ -60,7 +60,7 @@ exports.defu = function (val) {
   })
 };
 
-exports.calcul_droite = function (input,obstacles) {
+exports.calcul_droite = function (input, obstacles) {
   return new Promise(function (resolve, reject) {
     var a = Math.cos(input.Object.rotation[1]) / Math.sin(input.Object.rotation[1]);
 

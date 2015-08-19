@@ -36,6 +36,16 @@ var Robot = function (longueur, largeur, path) {
   this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 4, Math.PI));
   this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 2, 3 * Math.PI / 4));
 
+  this.reactors = [];
+
+  this.reactors.push(new Reactor(-this.longueur * (1 - this.ratio), this.largeur / 4));
+  this.reactors.push(new Reactor(-this.longueur * (1 - this.ratio), -this.largeur / 4));
+
+  //TODO does it works?
+  for(var i in this.reactors) {
+    this.Object.addChild(this.reactors[i].Object);
+  }
+
 };
 Robot.prototype.getPosition = function () {
   return this.Object.position;
@@ -58,7 +68,12 @@ Robot.prototype.calcul_position = function (input) {
   input.Object.setPosition(position.x, 40, position.z);
   input.Object.setRotation(0, this.getRotation() + input.rotation, 0);
 };
-Robot.prototype.rotate = function(t){
+Robot.prototype.rotate = function (t) {
   this.Object.setRotation(0, this.getRotation() + t, 0);
 };
 
+Robot.prototype.render = function() {
+  return new Promise(function(resolve, reject){
+    resolve(this.Object);
+  });
+};
