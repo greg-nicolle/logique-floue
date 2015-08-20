@@ -42,9 +42,9 @@ var Robot = function (longueur, largeur, path) {
   this.reactors.push(new Reactor(-this.longueur * (1 - this.ratio), -this.largeur / 4));
 
   //TODO does it works?
-  for(var i in this.reactors) {
-    this.Object.addChild(this.reactors[i].Object);
-  }
+  //for(var i in this.reactors) {
+  //  this.Object.addChild(this.reactors[i].Object);
+  //}
 
 };
 Robot.prototype.getPosition = function () {

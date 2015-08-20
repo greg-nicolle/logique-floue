@@ -1,4 +1,4 @@
-var Ground = function(){
+var Ground = function () {
   this.Mesh = new Mesh('ground');
   this.Mesh.loadFromObjFile('data/plateau.obj');
   this.mat = new Material('ground', 'data/shader/default.vShader', 'data/shader/default.fShader',

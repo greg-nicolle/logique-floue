@@ -23,8 +23,8 @@ var Sensor = function (longueur, largeur, rotation) {
   this.zOffset = largeur;
   this.rotation = rotation;
 };
-Sensor.prototype.render = function() {
-  return new Promise(function(resolve, reject){
+Sensor.prototype.render = function () {
+  return new Promise(function (resolve, reject) {
     resolve(this.Object);
   });
 };

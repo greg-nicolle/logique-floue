@@ -130,6 +130,7 @@ function start() {
 
   world = new World(camera,lightDirection);
 
+
   setInterval(function () {
     if (e_pause) {
       robot.move(vitesse);
@@ -167,12 +168,21 @@ function start() {
 
   var time = 0;
 
+  var outlineObject = [];
+  for(var i in world.obstacles[i]) {
+    outlineObject.push(world.obstacles[i].Object);
+  }
+  outlineObject.push(robot.Object);
+
   function render(deltaTime) {
     renderer.setCamera(camera);
 
     renderer.setRenderTarget(depthTarget);
     renderer.clear(null);
 
+    //for (var i in outlineObject) {
+    //  renderer.renderObject(outlineObject[i], depthMat);
+    //}
     renderer.renderObject(robot.Object, depthMat);
     for (var i in world.obstacles) {
       renderer.renderObject(world.obstacles[i].Object, depthMat);
@@ -191,6 +201,10 @@ function start() {
       renderer.renderObject(world.obstacles[i].Object);
     }
 
+    //for (var i in outlineObject) {
+    //  renderer.renderObject(outlineObject[i]);
+    //}
+
     renderer.renderObject(screenQuad, outlineMat);
     if (!e_nitro) {
       for (var i in robot.reactors) {
@@ -205,5 +219,4 @@ function start() {
   }
   Events.AddEventListener(Events.onRender, render);
   Events.FireEvent(Events.onRender);
-
 }
