@@ -18,12 +18,12 @@ var Sky = function(camera,lightDirection){
       mat.uniforms['windSpeed'].value = vec2.fromValues(0.025, 0.015);
     }.bind(this));
   this.mat.doubleSided = true;
-  this.object = new Object3D(this.mesh, this.mat);
-  this.object.setScale(camera.far * 0.7, camera.far * 0.7, camera.far * 0.7);
-  this.object.setPosition(0, -5000, 0);
+  this.Object = new Object3D(this.mesh, this.mat);
+  this.Object.setScale(camera.far * 0.7, camera.far * 0.7, camera.far * 0.7);
+  this.Object.setPosition(0, -5000, 0);
 };
 Sky.prototype.render = function() {
   return new Promise(function(resolve,reject){
-    resolve(this.object);
+    resolve(this.Object);
   });
 };

@@ -2,7 +2,6 @@ var logique = require('./logique');
 var maps = require('./maps');
 
 var robot = new Robot(450, 170, 'data/9112.obj');
-var obstacles = [];
 var reactors = [];
 
 var e_capteur = true;
@@ -35,22 +34,22 @@ var calcul_position = function (input) {
 };
 
 var escargot = function () {
-  maps.escargot(obstacles, robot, camera);
+  maps.escargot(world.obstacles, robot, camera);
   e_pause = false;
 };
 
 var demitour = function () {
-  maps.demitour(obstacles, robot, camera);
+  maps.demitour(world.obstacles, robot, camera);
   e_pause = false;
 };
 
 var demitour2 = function () {
-  maps.demitour2(obstacles, robot, camera);
+  maps.demitour2(world.obstacles, robot, camera);
   e_pause = false;
 };
 
 var antonoir = function () {
-  maps.antonoir(obstacles, robot, camera);
+  maps.antonoir(world.obstacles, robot, camera);
   e_pause = false;
 };
 
@@ -74,7 +73,7 @@ var nitro = function () {
 
 var camera = {};
 var reboot = function () {
-  maps.reboot(obstacles, robot, camera);
+  maps.reboot(world.obstacles, robot, camera);
   e_pause = false;
 };
 
@@ -129,8 +128,6 @@ function start() {
     outlineMat.uniforms['invScreenSize'].value = vec2.fromValues(1 / size.w, 1 / size.h);
   }
 
-  init_obstacles();
-  //init_sky();
   world = new World(camera,lightDirection);
 
   setInterval(function () {
@@ -147,7 +144,7 @@ function start() {
     for (var i in robot.sensors) {
       robot.calcul_position(robot.sensors[i]);
       if (e_pause) {
-        P.push(logique.calcul_droite(robot.sensors[i], obstacles)
+        P.push(logique.calcul_droite(robot.sensors[i], world.obstacles)
           .then(logique.triAnsemble));
       }
     }
@@ -164,7 +161,7 @@ function start() {
         console.log('error:' + err)
       });
     for (var i in robot.reactors) {
-      //robot.calcul_position(robot.reactors[i]);
+      robot.calcul_position(robot.reactors[i]);
     }
   }, 25);
 
@@ -177,8 +174,8 @@ function start() {
     renderer.clear(null);
 
     renderer.renderObject(robot.Object, depthMat);
-    for (var i in obstacles) {
-      renderer.renderObject(obstacles[i].Object, depthMat);
+    for (var i in world.obstacles) {
+      renderer.renderObject(world.obstacles[i].Object, depthMat);
     }
 
     renderer.setRenderTarget(null);
@@ -190,8 +187,8 @@ function start() {
         renderer.renderObject(robot.sensors[i].Object);
       }
     }
-    for (var i in obstacles) {
-      renderer.renderObject(obstacles[i].Object);
+    for (var i in world.obstacles) {
+      renderer.renderObject(world.obstacles[i].Object);
     }
 
     renderer.renderObject(screenQuad, outlineMat);
@@ -210,67 +207,3 @@ function start() {
   Events.FireEvent(Events.onRender);
 
 }
-
-var init_sky = function () {
-
-  var noiseTex = new Texture('data/Noise.jpg');
-  noiseTex.wrapping = GL.REPEAT;
-  noiseTex.magFilter = GL.LINEAR;
-  noiseTex.minFilter = GL.LINEAR_MIPMAP_LINEAR;
-
-  var skyTexture = new Texture('data/GradientSky.png');
-
-  var skyMesh = new Mesh('sky');
-  skyMesh.loadFromObjFile('data/Sphere.obj');
-  var skyMat = new Material('sky', 'data/shader/sky.vShader', 'data/shader/sky.fShader',
-    function (mat) {
-      mat.uniforms['lightDir'].value = lightDirection;
-      mat.uniforms['texture0'].texture = skyTexture;
-      mat.uniforms['texture1'].texture = noiseTex;
-
-      mat.uniforms['cloudDensity'].value = 0.25;
-      mat.uniforms['windSpeed'].value = vec2.fromValues(0.025, 0.015);
-    });
-  skyMat.doubleSided = true;
-  skyObject = new Object3D(skyMesh, skyMat);
-  skyObject.setScale(camera.far * 0.7, camera.far * 0.7, camera.far * 0.7);
-  skyObject.setPosition(0, -5000, 0);
-};
-
-var init_obstacles = function () {
-  var groundMesh = new Mesh('ground');
-  groundMesh.loadFromObjFile('data/plateau.obj');
-  var groundMat = new Material('ground', 'data/shader/default.vShader', 'data/shader/default.fShader',
-    function (mat) {
-      var texture = new Texture('data/grass_diffuse.png');
-      texture.minFilter = GL.LINEAR_MIPMAP_LINEAR;
-      mat.uniforms['texture0'].texture = texture;
-    });
-  obstacles[0] = {};
-  obstacles[0].Object = new Object3D(groundMesh, groundMat);
-  obstacles[0].Object.setPosition(0, 0, 0);
-  obstacles[0].Object.setRotation(0, Math.PI, 0);
-  obstacles[0].Object.setScale(12000, 0, 12000);
-  obstacles[0].largeur = 25000;
-  obstacles[0].longueur = 25000;
-
-  var houseMesh = new Mesh('house');
-  houseMesh.loadFromObjFile('data/Container.obj');
-  var houseMat = new Material('house', 'data/shader/default.vShader', 'data/shader/default.fShader',
-    function (mat) {
-      mat.uniforms['texture0'].texture = new Texture('data/Container.BMP');
-    });
-  houseMat.blendEquation = GL.FUNC_ADD;
-  houseMat.dstBlend = GL.ZERO;
-  houseMat.srcBlend = GL.ONE;
-
-  for (var i = 1; i < 30; i++) {
-    obstacles[i] = {};
-    obstacles[i].Object = new Object3D(houseMesh, houseMat);
-    obstacles[i].Object.setPosition(Math.random() * 25000 - 12500, 0, Math.random() * 25000 - 12500);
-    obstacles[i].Object.setRotation(0, Math.random() * Math.PI - Math.PI / 2, 0);
-    obstacles[i].Object.setScale(50, 50, 50);
-    obstacles[i].largeur = 500;
-    obstacles[i].longueur = 1200;
-  }
-};
