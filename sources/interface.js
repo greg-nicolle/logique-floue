@@ -18,15 +18,15 @@ acc.on_click = function (ev) {
   } else if (src.has_class("nitro")) {
     nitro();
   } else if (src.has_class("reboot")) {
-    reboot();
+    changemap("reboot");
   } else if (src.has_class("escargot")) {
-    escargot();
+    changemap("escargot");
   } else if (src.has_class("demitour")) {
-    demitour();
+    changemap("demitour");
   } else if (src.has_class("antonoir")) {
-    antonoir();
+    changemap("antonoir");
   } else if (src.has_class("emitour2")) {
-    demitour2();
+    changemap("demitour2");
   }
 };
 acc.init();

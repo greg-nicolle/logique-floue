@@ -33,26 +33,10 @@ var calcul_position = function (input) {
   input.Object.setRotation(0, robot.Object.rotation[1] + input.rotation, 0);
 };
 
-var escargot = function () {
-  maps.escargot(world.obstacles, robot, camera);
+var changemap = function(str) {
+  maps[str](world.obstacles, robot, camera);
   e_pause = false;
 };
-
-var demitour = function () {
-  maps.demitour(world.obstacles, robot, camera);
-  e_pause = false;
-};
-
-var demitour2 = function () {
-  maps.demitour2(world.obstacles, robot, camera);
-  e_pause = false;
-};
-
-var antonoir = function () {
-  maps.antonoir(world.obstacles, robot, camera);
-  e_pause = false;
-};
-
 
 var change_capteur = function () {
   e_capteur = !e_capteur;
