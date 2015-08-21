@@ -30,11 +30,11 @@ var Robot = function (longueur, largeur, path) {
   this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio) + this.longueur / 4, -this.largeur / 2, Math.PI / 2));
   this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 4, this.largeur / 2, -Math.PI / 2));
   this.sensors.push(new Sensor(this.longueur * this.ratio - this.longueur / 2, this.largeur / 2, -Math.PI / 2));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio) + this.longueur / 4, this.largeur / 2, -Math.PI / 2));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), this.largeur / 2, -3 * Math.PI / 4));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), this.largeur / 4, Math.PI));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 4, Math.PI));
-  this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 2, 3 * Math.PI / 4));
+  //this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio) + this.longueur / 4, this.largeur / 2, -Math.PI / 2));
+  //this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), this.largeur / 2, -3 * Math.PI / 4));
+  //this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), this.largeur / 4, Math.PI));
+  //this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 4, Math.PI));
+  //this.sensors.push(new Sensor(-this.longueur * (1 - this.ratio), -this.largeur / 2, 3 * Math.PI / 4));
 
   this.reactors = [];
 
@@ -72,8 +72,24 @@ Robot.prototype.rotate = function (t) {
   this.Object.setRotation(0, this.getRotation() + t, 0);
 };
 
-Robot.prototype.render = function() {
+Robot.prototype.render = function(render) {
   return new Promise(function(resolve, reject){
-    resolve(this.Object);
-  });
+    render(this.Object);
+    var P = [];
+    if(e_nitro) {
+      for(var i in this.reactors){
+        P.push(this.reactors[i].render(render));
+      }
+    }
+    if(e_capteur) {
+      for(var i in this.sensors) {
+        P.push(this.reactors[i].render(render));
+      }
+    }
+
+    Promise.all(P)
+    .then(function(){
+        resolve(render);
+      })
+  }.bind(this));
 };

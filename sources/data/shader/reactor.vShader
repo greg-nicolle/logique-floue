@@ -14,10 +14,6 @@ void main() {
     const vec4 startColor = vec4( 0.94, 0.07, 1.0, 0.50 );
     const vec4 endColor = vec4( 0.07, 0.85, 1.0, 0.10 );
 
-    //const vec4 endColor = vec4( 1, 1.0, 1.0, 0.50 );
-    //const vec4 startColor = vec4( 0.0, 0.0, 0.0, 0.10 );
-
-
     vec4 pos4 = vec4(position, 1.0);
     float life01 = fract( currentTime + pos4.z );
     pos4.z = life01 * height;

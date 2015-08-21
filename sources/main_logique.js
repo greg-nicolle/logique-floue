@@ -164,16 +164,17 @@ function start() {
     renderer.setRenderTarget(depthTarget);
     renderer.clear(null);
 
-    //for (var i in outlineObject) {
-    //  renderer.renderObject(outlineObject[i], depthMat);
-    //}
-    renderer.renderObject(robot.Object, depthMat);
-    for (var i in world.obstacles) {
-      renderer.renderObject(world.obstacles[i].Object, depthMat);
+    for (var i in outlineObject) {
+      renderer.renderObject(outlineObject[i], depthMat);
     }
+    //renderer.renderObject(robot.Object, depthMat);
+    //for (var i in world.obstacles) {
+    //  renderer.renderObject(world.obstacles[i].Object, depthMat);
+    //}
 
     renderer.setRenderTarget(null);
     renderer.clear(null);
+
     renderer.renderObject(robot.Object);
 
     if (e_capteur) {
@@ -181,9 +182,9 @@ function start() {
         renderer.renderObject(robot.sensors[i].Object);
       }
     }
-    for (var i in world.obstacles) {
-      renderer.renderObject(world.obstacles[i].Object);
-    }
+    //for (var i in world.obstacles) {
+    //  renderer.renderObject(world.obstacles[i].Object);
+    //}
 
     //for (var i in outlineObject) {
     //  renderer.renderObject(outlineObject[i]);

@@ -1,7 +1,7 @@
 var Sensor = function (longueur, largeur, rotation) {
   this.Mesh = new Mesh('capteur');
   this.Mesh.loadFromObjFile('data/cone.obj');
-  this.Mat = new Material('capteur', 'data/shader/default.vShader', 'data/shader/default.fShader',
+  this.Mat = new Material('capteur', 'data/shader/sesor.vShader', 'data/shader/sesor.fShader',
     function (mat) {
       var texture = new Texture('data/grass_diffuse.png');
       texture.minFilter = GL.LINEAR_MIPMAP_LINEAR;
@@ -23,8 +23,9 @@ var Sensor = function (longueur, largeur, rotation) {
   this.zOffset = largeur;
   this.rotation = rotation;
 };
-Sensor.prototype.render = function () {
+Sensor.prototype.render = function (render) {
   return new Promise(function (resolve, reject) {
-    resolve(this.Object);
-  });
+    render(this.Object);
+    resolve(render);
+  }.bind(this));
 };

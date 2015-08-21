@@ -23,9 +23,10 @@ var Reactor = function (longueur, largeur) {
 Reactor.prototype.randomPos = function () {
   return Math.random() - 0.5;
 };
-Reactor.prototype.render = function(obj) {
+Reactor.prototype.render = function(render) {
   return new Promise(function(resolve, reject){
-    resolve(obj.push(this.Object));
-  });
+    render(this.Object);
+    resolve(render);
+  }.bind(this));
 };
 

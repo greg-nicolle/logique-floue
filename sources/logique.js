@@ -56,7 +56,7 @@ exports.defu = function (val) {
       res.e3 = 0;
     }
 
-    resolve({vitesse: Math.exp(res.e2 * 2) - 1, rotation: (res.e3 * Math.PI / 6) - (res.e1 * Math.PI / 6)});
+    resolve({vitesse: Math.exp(res.e2 * 2) - 1, rotation: (res.e3 * Math.PI / 4) - (res.e1 * Math.PI / 4)});
   })
 };
 
